@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>MFU REG</title>
-  
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Flatpickr -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 
 <body class="flex bg-gray-100 min-h-screen">
-
   <!-- Sidebar -->
   <aside class="bg-purple-500 text-white w-64 flex flex-col">
     <div class="flex items-center justify-center h-20 font-bold text-2xl">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/2/26/Logo_MFU.png" class="h-10 mr-2" alt="MFU Logo"> REG.MFU
+      <img src="https://upload.wikimedia.org/wikipedia/commons/2/26/Logo_MFU.png" class="h-10 mr-2" alt="MFU Logo" /> REG.MFU
     </div>
     <nav class="flex flex-col gap-4 p-4">
       <a href="#" class="bg-purple-600 p-3 rounded-lg">Dashboard</a>
@@ -30,18 +26,21 @@
 
   <!-- Main Content -->
   <main class="flex-1 p-6">
-
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Dashboard</h1>
-      <div class="flex gap-4 items-center">
+      <div class="flex flex-col items-start gap-2"> <!-- แก้ตรงนี้ -->
         <button class="border px-3 py-1 rounded">EN / TH</button>
-        <input id="dateRange" class="border rounded p-2 w-60" placeholder="Select Date Range" />
+        <select id="term" class="border rounded p-2">
+          <option value="term1">Semester 1</option>
+          <option value="term2">Semester 2</option>
+          <option value="summer">Summer Semester</option>
+        </select>
       </div>
     </div>
+    
 
     <div class="grid grid-cols-3 gap-6">
-
       <!-- Graph Section -->
       <div class="col-span-2 bg-white p-6 rounded-xl shadow">
         <h2 class="text-xl font-bold mb-4">NUMBER OF WEEKLY USERS</h2>
@@ -52,119 +51,151 @@
       </div>
 
       <!-- Staff Rating Section -->
+      <!-- Staff Rating Section -->
       <div class="bg-white p-6 rounded-xl shadow flex flex-col gap-4">
         <div class="flex items-center gap-4">
-          <img src="https://pin.it/76QKyFhJY" class="rounded-full">
+          <img src="image/P_Oi.png" class="w-20 h-20 rounded-full object-cover">
           <div>
-            <div class="font-bold">Staff A</div>
+            <div class="font-bold">Porntip Panya</div>
             <div>⭐ 4.8</div>
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <img src="https://via.placeholder.com/50" class="rounded-full">
+          <img src="image/P_Lek.png" class="w-20 h-20 rounded-full object-cover">
           <div>
-            <div class="font-bold">Staff B</div>
+            <div class="font-bold">Rattikarn Nanglae</div>
             <div>⭐ 4.7</div>
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <img src="https://via.placeholder.com/50" class="rounded-full">
+          <img src="image/P_Nim.png" class="w-20 h-20 rounded-full object-cover">
           <div>
-            <div class="font-bold">Staff C</div>
+            <div class="font-bold">Sanyumporn Chaichormphu</div>
             <div>⭐ 4.2</div>
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <img src="https://via.placeholder.com/50" class="rounded-full">
+          <img src="image/P_Angoon.png" class="w-20 h-20 rounded-full object-cover">
           <div>
-            <div class="font-bold">Staff D</div>
+            <div class="font-bold">Tatchamay Whanchisri</div>
             <div>⭐ 3.9</div>
           </div>
         </div>
         <div class="flex items-center gap-4">
-          <img src="https://via.placeholder.com/50" class="rounded-full">
+          <img src="image/PP.png" class="w-20 h-20 rounded-full object-cover">
           <div>
-            <div class="font-bold">Staff E</div>
+            <div class="font-bold">Pakpoom Lamprasert</div>
             <div>⭐ 4.8</div>
           </div>
         </div>
       </div>
 
     </div>
-
   </main>
 
-  <!-- Script Section -->
+  <!-- Scripts -->
   <script>
-    // Chart.js - Weekly Users
+    const termData = {
+      term1: {
+        weeklyUsers: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+          appointment: [8, 5, 6, 9, 7],
+          tracking: [4, 3, 6, 5, 2],
+        },
+        overallRating: {
+          labels: ['Appointment', 'Document Tracking'],
+          datasets: [
+            { label: 'Fast Service', data: [3, 5], bg: '#2563EB' },
+            { label: 'Helpful Staff', data: [4, 3], bg: '#F59E0B' },
+            { label: 'On Time', data: [2, 1], bg: '#EF4444' },
+          ],
+        },
+      },
+      term2: {
+        weeklyUsers: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+          appointment: [5, 6, 4, 7, 6],
+          tracking: [2, 3, 2, 4, 3],
+        },
+        overallRating: {
+          labels: ['Appointment', 'Document Tracking'],
+          datasets: [
+            { label: 'Fast Service', data: [2, 4], bg: '#2563EB' },
+            { label: 'Helpful Staff', data: [3, 2], bg: '#F59E0B' },
+            { label: 'On Time', data: [3, 2], bg: '#EF4444' },
+          ],
+        },
+      },
+      summer: {
+        weeklyUsers: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+          appointment: [3, 2, 1, 4, 3],
+          tracking: [1, 2, 1, 1, 2],
+        },
+        overallRating: {
+          labels: ['Appointment', 'Document Tracking'],
+          datasets: [
+            { label: 'Fast Service', data: [1, 2], bg: '#2563EB' },
+            { label: 'Helpful Staff', data: [2, 1], bg: '#F59E0B' },
+            { label: 'On Time', data: [2, 2], bg: '#EF4444' },
+          ],
+        },
+      },
+    };
+
     const ctx1 = document.getElementById('weeklyUsersChart').getContext('2d');
-    new Chart(ctx1, {
-      type: 'bar',
-      data: {
-        labels: ['Mon 24/04/25', 'Tue 22/04/25', 'Wed 23/04/25', 'Thu 24/04/25', 'Fri 25/04/25'],
-        datasets: [
-          {
-            label: 'Appointment',
-            data: [8, 5, 6, 9, 7],
-            backgroundColor: '#2563EB'
-          },
-          {
-            label: 'Document Tracking',
-            data: [4, 3, 6, 5, 2],
-            backgroundColor: '#F59E0B'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-
-    // Chart.js - Average Overall Rating
     const ctx2 = document.getElementById('overallRatingChart').getContext('2d');
-    new Chart(ctx2, {
-      type: 'bar',
-      data: {
-        labels: ['Appointment', 'Document Tracking'],
-        datasets: [
-          {
-            label: 'Service Provider',
-            data: [3, 5],
-            backgroundColor: '#2563EB'
-          },
-          {
-            label: 'Service Delivery Process',
-            data: [4, 3],
-            backgroundColor: '#F59E0B'
-          },
-          {
-            label: 'Facilities',
-            data: [2, 1],
-            backgroundColor: '#EF4444'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
 
-    // Flatpickr - Date Range
-    flatpickr("#dateRange", {
-      mode: "range",
-      dateFormat: "d M Y"
+    let weeklyChart, ratingChart;
+
+    function renderCharts(term) {
+      const data = termData[term];
+
+      // Weekly Users Chart
+      if (weeklyChart) weeklyChart.destroy();
+      weeklyChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: data.weeklyUsers.labels,
+          datasets: [
+            {
+              label: 'Appointment',
+              data: data.weeklyUsers.appointment,
+              backgroundColor: '#2563EB',
+            },
+            {
+              label: 'Document Tracking',
+              data: data.weeklyUsers.tracking,
+              backgroundColor: '#F59E0B',
+            },
+          ],
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } },
+      });
+
+      // Overall Rating Chart
+      if (ratingChart) ratingChart.destroy();
+      ratingChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: data.overallRating.labels,
+          datasets: data.overallRating.datasets.map(d => ({
+            label: d.label,
+            data: d.data,
+            backgroundColor: d.bg,
+          })),
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } } },
+      });
+    }
+
+    // Initial load
+    renderCharts('term1');
+
+    // Dropdown listener
+    document.getElementById('term').addEventListener('change', e => {
+      renderCharts(e.target.value);
     });
   </script>
-
 </body>
 </html>
