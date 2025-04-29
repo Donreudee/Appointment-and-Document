@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile2</title>
+  <link rel="stylesheet" href="/CSS/profile1.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+  <div id="app">
+    <h1>History</h1>
+
+    <!-- Date Range -->
+    <div class="date-range">
+      <input type="date" v-model="startDate">
+      <span> to </span>
+      <input type="date" v-model="endDate">
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button :class="{ active: activeTab === 'appointment' }" @click="activeTab = 'appointment'">Appointment</button>
+      <button :class="{ active: activeTab === 'document' }" @click="activeTab = 'document'">Document Tracking</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table">
+
+      <!-- Appointment Table -->
+      <div v-if="activeTab === 'appointment'">
+        <div v-for="(item, index) in appointmentItems" :key="item.id" class="table-row">
+          <div class="cell">{{ index + 1 }}</div>
+          <div class="cell">{{ item.date }}</div>
+          <div class="cell">{{ item.topic }}</div>
+          <div class="cell">{{ item.status }}</div>
+        </div>
+      </div>
+
+      <!-- Document Table -->
+      <div v-if="activeTab === 'document'">
+        <div v-for="(docGroup, groupName) in documentItems" :key="groupName">
+          <h3>{{ groupName }}</h3>
+          <div v-for="(item, index) in docGroup" :key="item.id" class="table-row">
+            <div class="cell">{{ index + 1 }}</div>
+            <div class="cell">{{ item.date }}</div>
+            <div class="cell">{{ item.topic }}</div>
+            <div class="cell">{{ item.status }}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          activeTab: 'appointment',
+          startDate: '',
+          endDate: '',
+          appointmentItems: [
+            { id: 1, date: '2025-03-01', topic: 'Course Registration', status: 'Approved' },
+            { id: 2, date: '2025-03-05', topic: 'Advising Meeting', status: 'Pending' },
+          ],
+          documentItems: {
+            'Certificate': [
+              { id: 1, date: '2025-04-01', topic: 'Request Certificate', status: 'Done' },
+            ],
+            'Transcript': [
+              { id: 2, date: '2025-04-03', topic: 'Request Transcript', status: 'Processing' },
+            ],
+            'Other Documents': [
+              { id: 3, date: '2025-04-05', topic: 'Request Other Document', status: 'Pending' },
+            ]
+          }
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+
+  
+  <style scoped>
+  .date-range {
+    margin-bottom: 20px;
+  }
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .tabs button {
+    padding: 10px 20px;
+    background-color: lightgray;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  .tabs .active {
+    background-color: #6c63ff;
+    color: white;
+  }
+  .table {
+    background-color: #6c63ff;
+    padding: 10px;
+    border-radius: 10px;
+    overflow-y: auto;
+  }
+  .table-row {
+    background-color: lightgray;
+    border-radius: 10px;
+    display: flex;
+    padding: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+  }
+  .cell {
+    flex: 1;
+    text-align: center;
+  }
+  .Approve {
+    color: green;
+    font-weight: bold;
+  }
+  .Reject {
+    color: red;
+    font-weight: bold;
+  }
+  </style>
+
