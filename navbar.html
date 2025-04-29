@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Navbar Layout</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: #7e6ccf;
+      color: white;
+      padding-top: 2px;
+      height: 100vh;
+      position: fixed;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .nav-item i {
+      margin-right: 12px;
+    }
+
+    .nav-item:hover {
+      background-color: #6b5bb5;
+    }
+
+    /* ✅ Active nav item - Drop shadow */
+    .nav-item.active {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      color: white;
+      font-weight: bold;
+      border-left: 5px solid white;
+    }
+
+    /* Topbar */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: #a89ee0;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 2;
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .top-left i {
+      font-size: 24px;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .top-left img {
+      height: 50px;
+      object-fit: contain;
+      margin-top: 5px;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .lang-toggle span {
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .lang-toggle .active {
+      background-color: white;
+      color: #3f51b5;
+      font-weight: bold;
+    }
+
+    /* ✅ Logout button style */
+    .logout-button {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background-color 0.3s, color 0.3s;
+      margin-right: 40px; /* ✅ เพิ่มพื้นที่จากขอบขวา */
+    }
+
+    .logout-button:hover {
+      background-color: white;
+      color: #7e6ccf;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 220px;
+      margin-top: 60px;
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content.full {
+      margin-left: 0;
+    }
+
+    /* ✅ Section content */
+    .page-section {
+      display: none;
+      padding-top: 0;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    @media screen and (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="top-left">
+    <i class="bi bi-list" id="menu-toggle"></i>
+    <div>
+      <img src="C:\Users\User\Documents\We Love Drop-Down\Appointment-and-Document-main\asset\logo-reg-2023.e01d1e7.png" alt="logo">
+    </div>
+  </div>
+  <div class="top-right">
+    <div class="lang-toggle">
+      <span id="lang-en" class="active">EN</span> / 
+      <span id="lang-th">TH</span>
+    </div>
+    <button id="logout-btn" class="logout-button" title="Logout">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </button>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="nav-item active" data-target="dashboard">
+    <i class="bi bi-speedometer2"></i>
+    <span>Dashboard</span>
+  </div>
+  <div class="nav-item" data-target="management">
+    <i class="bi bi-people-fill"></i>
+    <span>Management</span>
+  </div>
+  <div class="nav-item" data-target="history">
+    <i class="bi bi-clock-history"></i>
+    <span>History</span>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="main-content">
+  <div id="dashboard" class="page-section active">
+    <h2>Dashboard</h2>
+    <p>This is the dashboard content.</p>
+  </div>
+
+  <div id="management" class="page-section">
+    <h2>Management</h2>
+    <p>This is the management content.</p>
+  </div>
+
+  <div id="history" class="page-section">
+    <h2>History</h2>
+    <p>This is the history content.</p>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+  // Toggle sidebar
+  const toggleBtn = document.getElementById('menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('main-content');
+
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('hidden');
+    mainContent.classList.toggle('full');
+  });
+
+  // Toggle language active
+  const langEN = document.getElementById('lang-en');
+  const langTH = document.getElementById('lang-th');
+
+  langEN.addEventListener('click', () => {
+    langEN.classList.add('active');
+    langTH.classList.remove('active');
+  });
+
+  langTH.addEventListener('click', () => {
+    langTH.classList.add('active');
+    langEN.classList.remove('active');
+  });
+
+  // Highlight active nav + show/hide page sections
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('.page-section');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      navItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+
+      const target = item.getAttribute('data-target');
+      sections.forEach(sec => {
+        sec.classList.remove('active');
+        if (sec.id === target) {
+          sec.classList.add('active');
+        }
+      });
+    });
+  });
+
+  // ✅ Logout button alert
+  const logoutBtn = document.getElementById('logout-btn');
+  logoutBtn.addEventListener('click', () => {
+    alert('Are you sure you want to log out?');
+  });
+</script>
+
+</body>
+</html>
