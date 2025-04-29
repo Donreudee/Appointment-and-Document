@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rating Appointment</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: #7e6ccf;
+      color: white;
+      padding-top: 2px;
+      height: 100vh;
+      position: fixed;
+      transition: transform 0.3s ease;
+      z-index: 100;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+      z-index: 102;
+    }
+
+    .nav-item i {
+      margin-right: 12px;
+    }
+
+    .nav-item:hover {
+      background-color: #6b5bb5;
+    }
+
+    .nav-item.active {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      color: white;
+      font-weight: bold;
+      border-left: 5px solid white;
+    }
+
+    /* Topbar */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: #a89ee0;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 101;
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .top-left i {
+      font-size: 24px;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .top-left img {
+      height: 50px;
+      object-fit: contain;
+    }
+
+    .container {
+      margin-left: 220px;
+      padding: 20px;
+      margin-top: 60px;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .lang-toggle span {
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .lang-toggle .active {
+      background-color: white;
+      color: #3f51b5;
+      font-weight: bold;
+    }
+
+    .logout-button {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background-color 0.3s, color 0.3s;
+      margin-right: 40px;
+    }
+
+    .logout-button:hover {
+      background-color: white;
+      color: #7e6ccf;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 220px;
+      margin-top: 60px;
+      padding: 20px;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-left: 20px;
+    }
+
+    .profile img {
+      width: 100px;
+      height: 100px;
+      border-radius: 100%;
+    }
+
+    .tabs {
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+
+    .tabs button {
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 10px 10px 0 0;
+      background: #d9d9f2;
+      margin-right: 5px;
+    }
+
+    .tabs button.active {
+      background-color: #7857ca;
+      color: white;
+    }
+
+    .rating-box {
+      background-color: #5f42b3;
+      color: white;
+      padding: 20px;
+      border-radius: 0 0 20px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-left: 20px;
+    }
+
+    .bar-chart {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1;
+      min-width: 500px;
+      max-width: 700px;
+      height: 400px;
+      margin-left: 30px;
+    }
+
+    .comments {
+      background: #eee;
+      padding: 10px;
+      border-radius: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-top: 80px;
+    }
+
+    .comment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .comment {
+      background: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      color: black;
+      margin-left: 10px;
+    }
+
+    .comment-icon {
+      width: 30px;
+      height: 30px;
+      background: #ccc;
+      border-radius: 50%;
+    }
+
+    .term-select select {
+      padding: 8px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="top-left">
+      <i class="bi bi-list" id="menu-toggle"></i>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/e/e0/Logo_Mae_Fah_Luang_University.png" alt="logo">
+    </div>
+    <div class="top-right">
+      <div class="lang-toggle">
+        <span id="lang-en" class="active">EN</span> / 
+        <span id="lang-th">TH</span>
+      </div>
+      <button id="logout-btn" class="logout-button" title="Logout">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="nav-item active" data-target="dashboard">
+      <i class="bi bi-speedometer2"></i>
+      <span>Dashboard</span>
+    </div>
+    <div class="nav-item" data-target="management">
+      <i class="bi bi-people-fill"></i>
+      <span>Management</span>
+    </div>
+    <div class="nav-item" data-target="history">
+      <i class="bi bi-clock-history"></i>
+      <span>History</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <section class="profile">
+      <img src="image/P_Angoon.png" alt="Profile" class="profile-pic" />
+      <div>
+        <h2 style="text-align: center;">Name : <strong>Tatchamay Whanchisri</strong></h2>
+        <p>tatchamay.wah@mfu.ac.th</p>
+      </div>
+      <div style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+        <div class="term-select">
+          <select id="term">
+            <option value="term1">Semester 1</option>
+            <option value="term2">Semester 2</option>
+            <option value="term3">Semester 3</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <div class="tabs">
+      <button id="appointmentBtn" class="active">Appointment</button>
+      <button id="documentBtn">Document Tracking</button>
+    </div>
+
+    <div id="appointmentSection" class="rating-box">
+      <div>
+        <h1 id="appointmentRating">3.9 ★★★★☆</h1>
+        <div class="bar-chart">
+          <canvas id="barChartAppointment"></canvas>
+        </div>
+      </div>
+      <div class="comments">
+        <h3>comment</h3>
+        <div class="comment-list" id="appointmentComments"></div>
+      </div>
+    </div>
+
+    <div id="documentSection" class="rating-box" style="display: none;">
+      <div>
+        <h1 id="documentRating">3.5 ★★★★☆</h1>
+        <div class="bar-chart">
+          <canvas id="barChartDocument"></canvas>
+        </div>
+      </div>
+      <div class="comments">
+        <h3>comment</h3>
+        <div class="comment-list" id="documentComments"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const appointmentBtn = document.getElementById('appointmentBtn');
+    const documentBtn = document.getElementById('documentBtn');
+    const appointmentSection = document.getElementById('appointmentSection');
+    const documentSection = document.getElementById('documentSection');
+    const termSelect = document.getElementById('term');
+
+    const appointmentCommentsDiv = document.getElementById('appointmentComments');
+    const documentCommentsDiv = document.getElementById('documentComments');
+
+    let appointmentChart, documentChart;
+
+    const chartData = {
+      term1: {
+        appointment: [5, 2, 3],
+        document: [3, 4, 2],
+        appointmentRating: "3.9 ★★★★☆",
+        documentRating: "3.5 ★★★★☆",
+        appointmentComments: [
+          { stars: "★★★★☆", date: "12 FEB 2025", text: "She is kind and works very quickly." },
+          { stars: "★★★☆☆", date: "12 FEB 2025", text: "The service was decent and followed the standard process..." }
+        ],
+        documentComments: [
+          { stars: "★★★★☆", date: "10 FEB 2025", text: "Great document handling speed." },
+          { stars: "★★☆☆☆", date: "11 FEB 2025", text: "Some delays in processing." }
+        ]
+      },
+      term2: {
+        appointment: [3, 4, 4],
+        document: [5, 2, 3],
+        appointmentRating: "4.0 ★★★★☆",
+        documentRating: "3.7 ★★★★☆",
+        appointmentComments: [
+          { stars: "★★★★★", date: "20 MAR 2025", text: "Excellent support!" }
+        ],
+        documentComments: [
+          { stars: "★★★☆☆", date: "18 MAR 2025", text: "Average service." }
+        ]
+      },
+      term3: {
+        appointment: [4, 3, 5],
+        document: [2, 5, 4],
+        appointmentRating: "4.2 ★★★★☆",
+        documentRating: "3.9 ★★★★☆",
+        appointmentComments: [
+          { stars: "★★★★☆", date: "01 APR 2025", text: "Very friendly and quick!" }
+        ],
+        documentComments: [
+          { stars: "★★★☆☆", date: "02 APR 2025", text: "Fine, but could be faster." }
+        ]
+      }
+    };
+
+    const labels = [
+      'Fast, easy, and accurate service',
+      'Knowledgeable staff with helpful support',
+      'On-time service completion'
+    ];
+
+    function createChart(ctx, label, data, colors) {
+      return new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: label,
+            data: data,
+            backgroundColor: colors
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 8 } } },
+            y: { beginAtZero: true, ticks: { font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    function switchSection(term) {
+      const data = chartData[term];
+      // Update Ratings
+      document.getElementById("appointmentRating").textContent = data.appointmentRating;
+      document.getElementById("documentRating").textContent = data.documentRating;
+
+      // Clear previous comments
+      appointmentCommentsDiv.innerHTML = '';
+      documentCommentsDiv.innerHTML = '';
+
+      // Add new comments
+      data.appointmentComments.forEach(comment => {
+        appointmentCommentsDiv.innerHTML += `<div><strong>${comment.stars}</strong> ${comment.date}: ${comment.text}</div>`;
+      });
+
+      data.documentComments.forEach(comment => {
+        documentCommentsDiv.innerHTML += `<div><strong>${comment.stars}</strong> ${comment.date}: ${comment.text}</div>`;
+      });
+
+      // Update Charts
+      if (appointmentChart) appointmentChart.destroy();
+      if (documentChart) documentChart.destroy();
+
+      appointmentChart = createChart(document.getElementById('barChartAppointment'), 'Appointment Rating', data.appointment, ['#4CAF50', '#FFC107', '#F44336']);
+      documentChart = createChart(document.getElementById('barChartDocument'), 'Document Rating', data.document, ['#2196F3', '#9C27B0', '#FF5722']);
+    }
+
+    // Tab Switch
+    appointmentBtn.addEventListener('click', () => {
+      appointmentSection.style.display = 'block';
+      documentSection.style.display = 'none';
+      appointmentBtn.classList.add('active');
+      documentBtn.classList.remove('active');
+    });
+
+    documentBtn.addEventListener('click', () => {
+      documentSection.style.display = 'block';
+      appointmentSection.style.display = 'none';
+      documentBtn.classList.add('active');
+      appointmentBtn.classList.remove('active');
+    });
+
+    // Sidebar Toggle
+    document.getElementById("menu-toggle").addEventListener("click", () => {
+      document.getElementById("sidebar").classList.toggle("hidden");
+    });
+
+    // Term Change
+    termSelect.addEventListener("change", (e) => {
+      switchSection(e.target.value);
+    });
+
+    // Initial load
+    switchSection('term1');
+  </script>
+</body>
+</html>
