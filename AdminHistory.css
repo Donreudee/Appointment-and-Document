@@ -1,0 +1,41 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    background: #f2f2f2;
+  }
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  .card {
+    background: rgb(255, 255, 255);
+    padding: 20px;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex; /* <<< ใส่ flex เพื่อจัดรูปกับข้อความให้อยู่ข้างกัน */
+    align-items: center; /* <<< จัดให้รูปกับข้อความอยู่กลางแนวตั้ง */
+    gap: 15px; /* <<< ช่องว่างระหว่างรูปกับข้อความ */
+  }
+  .card img {
+    width: 150px; /* เปลี่ยนจาก 100% เป็น 150px */
+    height: 100px; /* ปรับสูงตามสัดส่วน */
+    object-fit: contain;
+    border-radius: 8px;
+    margin:  left; /* ทำให้รูปอยู่ซ้าย */
+    display: block; /* บังคับให้ img เป็น block element */
+    border-radius: 50%;
+  }
+  .card h3 {
+    margin: 10px 0 5px 0;
+    font-size: 20px;
+  }
+  .card p {
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+  }
+  .card-link {
+    text-decoration: none; /* ลบขีดเส้นใต้ลิงก์ */
+    color: inherit; /* สีข้อความตามเดิม */
+  }
