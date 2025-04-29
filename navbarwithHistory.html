@@ -101,11 +101,12 @@
         <!-- Appointment Table -->
         <div v-if="activeTab === 'appointment'" class="bg-appointment p-4 rounded-b-2xl -mt-2">
           <div class="grid grid-cols-6 font-bold bg-gray-200 text-black p-2 rounded-lg text-center">
-            <div>No.</div><div>Date</div><div>Topic</div><div>Note</div><div>Status</div><div></div>
+            <div>No.</div><div>Student ID</div><div>Date</div><div>Topic</div><div>Note</div><div>Status</div><div></div>
           </div>
           <div v-for="(item, index) in filteredAppointments" :key="item.id"
                class="grid grid-cols-6 bg-white text-black p-2 mt-2 rounded-lg text-center shadow">
             <div>{{ index + 1 }}</div>
+            <div>{{ item.studentID }}</div>
             <div>{{ item.date }}</div>
             <div>{{ item.topic }}</div>
             <div>{{ item.note }}</div>
@@ -118,11 +119,12 @@
         <!-- Document Table -->
         <div v-if="activeTab === 'document'" class="bg-document p-4 rounded-b-2xl -mt-2">
           <div class="grid grid-cols-6 font-bold bg-gray-200 text-black p-2 rounded-lg text-center">
-            <div>No.</div><div>Date</div><div>Topic</div><div>Note</div><div>Status</div><div></div>
+            <div>No.</div><div>Student ID</div><div>Date</div><div>Topic</div><div>Note</div><div>Status</div><div></div>
           </div>
           <div v-for="(item, index) in filteredDocuments" :key="item.id"
                class="grid grid-cols-6 bg-white text-black p-2 mt-2 rounded-lg text-center shadow">
             <div>{{ index + 1 }}</div>
+            <div>{{ item.studentID }}</div>
             <div>{{ item.date }}</div>
             <div>{{ item.topic }}</div>
             <div>{{ item.note }}</div>
@@ -197,14 +199,14 @@
             { id: 5, name: 'PP', image: 'https://via.placeholder.com/100?text=PP' }
           ],
           appointments: [
-            { id: 1, staffId: 1, date: '2025-03-01', topic: 'Course Registration', note: '-', status: 'Approved' },
-            { id: 2, staffId: 2, date: '2025-03-05', topic: 'Advising Meeting', note: '-', status: 'Reject' },
-            { id: 3, staffId: 1, date: '2025-03-10', topic: 'Training', note: '-', status: 'Approved' }
+            { id: 1, staffId: 1, studentID: '65xxxxxxxx', date: '2025-03-01', topic: 'Course Registration', note: '-', status: 'Approved' },
+            { id: 2, staffId: 2, studentID: '65xxxxxxxx', date: '2025-03-05', topic: 'Advising Meeting', note: '-', status: 'Reject' },
+            { id: 3, staffId: 1, studentID: '65xxxxxxxx', date: '2025-03-10', topic: 'Training', note: '-', status: 'Approved' }
           ],
           documents: [
-            { id: 1, staffId: 1, date: '2025-04-01', topic: 'Request Certificate', note: '-', status: 'Approved' },
-            { id: 2, staffId: 3, date: '2025-04-03', topic: 'Request Transcript', note: '-', status: 'Reject' },
-            { id: 3, staffId: 1, date: '2025-04-05', topic: 'Request Other Document', note: '-', status: 'Pending' }
+            { id: 1, staffId: 1, studentID: '65xxxxxxxx', date: '2025-04-01', topic: 'Request Certificate', note: '-', status: 'Approved' },
+            { id: 2, staffId: 3, studentID: '65xxxxxxxx', date: '2025-04-03', topic: 'Request Transcript', note: '-', status: 'Reject' },
+            { id: 3, staffId: 1, studentID: '65xxxxxxxx', date: '2025-04-05', topic: 'Request Other Document', note: '-', status: 'Pending' }
           ]
         };
       },
