@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MFU REG</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="/src/styles.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .bg-appointment {
+      background-color: #4D55CC;
+    }
+
+    .bg-document {
+      background-color: #B5A8D5;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: #7e6ccf;
+      color: white;
+      padding-top: 2px;
+      height: 100vh;
+      position: fixed;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .nav-item i {
+      margin-right: 12px;
+    }
+
+    .nav-item:hover {
+      background-color: #6b5bb5;
+    }
+
+    /* ✅ Active nav item - Drop shadow */
+    .nav-item.active {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      color: white;
+      font-weight: bold;
+      border-left: 5px solid white;
+    }
+
+    /* Topbar */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: #a89ee0;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 2;
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .top-left i {
+      font-size: 24px;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .top-left img {
+      height: 50px;
+      object-fit: contain;
+      margin-top: 5px;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .lang-toggle span {
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .lang-toggle .active {
+      background-color: white;
+      color: #3f51b5;
+      font-weight: bold;
+    }
+
+    /* ✅ Logout button style */
+    .logout-button {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background-color 0.3s, color 0.3s;
+      margin-right: 30px;
+      /* ✅ เพิ่มพื้นที่จากขอบขวา */
+    }
+
+    .logout-button:hover {
+      background-color: white;
+      color: #7e6ccf;
+    }
+
+    /* Management Table Styles */
+    .custom-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+    }
+
+    .card-row {
+      background: #f1f1f1;
+      border-radius: 15px;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-row.header {
+      background: #d1d1d1;
+      font-weight: bold;
+    }
+
+    /* ปุ่ม Disable */
+    .btn-disable {
+      background-color: #ff6b6b;
+      color: white;
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    /* ปุ่ม Edit */
+    .btn-edit {
+      background-color: #f9c74f;
+      color: black;
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: none;
+      margin-left: 5px;
+    }
+
+    /* ปุ่ม Add ด้านขวาบน */
+    .add-btn {
+      background: #4cd964;
+      border: none;
+      padding: 10px 20px;
+      font-size: 14px;
+      color: white;
+      border-radius: 6px;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 220px;
+      margin-top: 60px;
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content.full {
+      margin-left: 0;
+    }
+
+    /* ✅ Section content */
+    .page-section {
+      display: none;
+      padding-top: 0;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    @media screen and (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="top-left">
+      <i class="bi bi-list" id="menu-toggle"></i>
+      <div>
+        <img
+          src="C:\Users\User\Documents\We Love Drop-Down\Appointment-and-Document-main\Appointment-and-Document-main\Asset\logo-reg-2023.e01d1e7.png"
+          alt="logo">
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="lang-toggle">
+        <span id="lang-en" class="active">EN</span> /
+        <span id="lang-th">TH</span>
+      </div>
+      <button id="logout-btn" class="logout-button" title="Logout">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="nav-item active" data-target="dashboard">
+      <i class="bi bi-speedometer2"></i>
+      <span>Dashboard</span>
+    </div>
+    <div class="nav-item" data-target="management">
+      <i class="bi bi-people-fill"></i>
+      <span>Management</span>
+    </div>
+    <div class="nav-item" data-target="history">
+      <i class="bi bi-clock-history"></i>
+      <span>History</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="main-content">
+    <div id="dashboard" class="page-section active">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Dashboard</h1>
+        <div class="flex flex-col items-start gap-2"> <!-- แก้ตรงนี้ -->
+          <select id="term" class="border rounded p-2">
+            <option value="term1">Semester 1</option>
+            <option value="term2">Semester 2</option>
+            <option value="summer">Semester 3</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-6">
+        <!-- Graph Section -->
+        <div class="col-span-2 bg-white p-6 rounded-xl shadow">
+          <h2 class="text-xl font-bold mb-4">NUMBER OF WEEKLY USERS</h2>
+          <canvas id="weeklyUsersChart" class="mb-8"></canvas>
+
+          <h2 class="text-xl font-bold mb-4">AVERAGE OVERALL RATING</h2>
+          <canvas id="overallRatingChart"></canvas>
+        </div>
+
+        <!-- Staff Rating Section -->
+        <!-- Staff Rating Section -->
+        <div class="bg-white p-6 rounded-xl shadow flex flex-col gap-4">
+          <a href="Rating_Porntip.html" class="flex items-center gap-4 officer-card" data-name="Porntip Panya" data-email="porntip.pan@mfu.ac.th" data-image="image/P_Oi.png">
+            <img src="Asset/P_Oi.png" class="w-20 h-20 rounded-full object-cover">
+            <div>
+              <div class="font-bold">Porntip Panya</div>
+              <div>⭐ 4.8</div>
+            </div>
+          </a>
+        
+          
+          <a href="Rating_Rattikarn.html" class="flex items-center gap-4 officer-card" data-name="Rattikarn Nanglae" data-email="rattikarn.n@mfu.ac.th" data-image="image/P_Lek.png">
+            <img src="Asset/P_Lek.png" class="w-20 h-20 rounded-full object-cover">
+            <div>
+              <div class="font-bold">Rattikarn Nanglae</div>
+              <div>⭐ 4.7</div>
+            </div>
+          </a>
+        
+         
+          <a href="Rating_Sayumporn.html" class="flex items-center gap-4 officer-card" data-name="Sanyumporn Chaichormphu" data-email="sanyumporn.c@mfu.ac.th" data-image="image/P_Nim.png">
+            <img src="Asset/P_Nim.png" class="w-20 h-20 rounded-full object-cover">
+            <div>
+              <div class="font-bold">Sanyumporn Chaichormphu</div>
+              <div>⭐ 4.2</div>
+            </div>
+          </a>
+        
+          <a href="Rating_Tatchamay.html" class="flex items-center gap-4 officer-card" data-name="Tatchamay Whanchisri" data-email="tatchamay.w@mfu.ac.th" data-image="image/P_Angoon.png">
+            <img src="Asset/P_Angoon.png" class="w-20 h-20 rounded-full object-cover">
+            <div>
+              <div class="font-bold">Tatchamay Whanchisri</div>
+              <div>⭐ 3.9</div>
+            </div>
+          </a>
+        
+          
+          <a href="Rating_Pakpoom.html" class="flex items-center gap-4 officer-card" data-name="Pakpoom Lamprasert" data-email="pakpoom.l@mfu.ac.th" data-image="image/PP.png">
+            <img src="Asset/PP.png" class="w-20 h-20 rounded-full object-cover">
+            <div>
+              <div class="font-bold">Pakpoom Lamprasert</div>
+              <div>⭐ 4.8</div>
+            </div>
+          </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Management Section -->
+    <div id="management" class="page-section">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-gray-800">Management</h2>
+        <button class="bg-green-400 text-white px-6 py-2 rounded-lg hover:bg-green-500">Add</button>
+      </div>
+
+      <!-- Table Header -->
+      <div class="grid grid-cols-4 bg-gray-300 rounded-xl px-6 py-3 font-semibold text-gray-800 text-center mb-2">
+        <div class="text-center">No.</div>
+        <div class="text-center">Name</div>
+        <div class="text-center">Responsibilities</div>
+        <div class="text-center">Status</div>
+      </div>
+
+      <!-- Table Rows -->
+      <div class="space-y-3">
+        <div class="grid grid-cols-4 items-center bg-gray-100 rounded-xl px-6 py-3 shadow">
+          <div>1</div>
+          <div><strong>Staff A</strong></div>
+          <div>Course registration</div>
+          <div class="flex gap-2 justify-center">
+            <button class="bg-red-400 text-white px-3 py-1 rounded-md text-sm hover:bg-red-500">Disable</button>
+            <button class="bg-yellow-400 text-white px-3 py-1 rounded-md text-sm hover:bg-yellow-500">Edit</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 items-center bg-gray-100 rounded-xl px-6 py-3 shadow">
+          <div>2</div>
+          <div><strong>Staff B</strong></div>
+          <div>Tuition fee deferment</div>
+          <div class="flex gap-2 justify-center">
+            <button class="bg-red-400 text-white px-3 py-1 rounded-md text-sm">Disable</button>
+            <button class="bg-yellow-400 text-white px-3 py-1 rounded-md text-sm">Edit</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 items-center bg-gray-100 rounded-xl px-6 py-3 shadow">
+          <div>3</div>
+          <div><strong>Staff C</strong></div>
+          <div>University activity</div>
+          <div class="flex gap-2 justify-center">
+            <button class="bg-red-400 text-white px-3 py-1 rounded-md text-sm">Disable</button>
+            <button class="bg-yellow-400 text-white px-3 py-1 rounded-md text-sm">Edit</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 items-center bg-gray-100 rounded-xl px-6 py-3 shadow">
+          <div>4</div>
+          <div><strong>Staff D</strong></div>
+          <div>Student assistant</div>
+          <div class="flex gap-2 justify-center">
+            <button class="bg-red-400 text-white px-3 py-1 rounded-md text-sm">Disable</button>
+            <button class="bg-yellow-400 text-white px-3 py-1 rounded-md text-sm">Edit</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-4 items-center bg-gray-100 rounded-xl px-6 py-3 shadow">
+          <div>5</div>
+          <div><strong>Staff E</strong></div>
+          <div>Course registration</div>
+          <div class="flex gap-2 justify-center">
+            <button class="bg-red-400 text-white px-3 py-1 rounded-md text-sm">Disable</button>
+            <button class="bg-yellow-400 text-white px-3 py-1 rounded-md text-sm">Edit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="history" class="page-section">
+    <div id="app">
+      <!-- 🔹 หน้า: รายชื่อพนักงาน -->
+      <div v-if="page === 'list'">
+        <h1 class="text-4xl font-bold mb-8 text-gray-800">History</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          <div v-for="person in staff" :key="person.id" @click="selectPerson(person)"
+            class="bg-white rounded-xl shadow-md p-6 cursor-pointer hover:shadow-lg text-center transition">
+            <img :src="person.image" class="w-28 h-28 mx-auto rounded-full object-cover mb-4" />
+            <p class="font-bold text-xl">{{ person.name }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔹 หน้า: รายละเอียดพร้อมแท็บ -->
+      <div v-if="page === 'detail'">
+        <h1 class="text-3xl font-bold mb-4 text-gray-800">{{ selectedPerson.name }}'s History</h1>
+
+        <!-- Tabs -->
+        <div class="flex gap-1 mb-0">
+          <button @click="activeTab = 'appointment'" :class="[
+                'px-4 py-2 font-semibold rounded-t-lg z-20',
+                activeTab === 'appointment' ? 'bg-[#4D55CC] text-white' : 'bg-[#B5A8D5] text-white opacity-70'
+              ]">Appointment</button>
+
+          <button @click="activeTab = 'document'" :class="[
+                'px-4 py-2 font-semibold rounded-t-lg z-20',
+                activeTab === 'document' ? 'bg-[#B5A8D5] text-white' : 'bg-[#4D55CC] text-white opacity-70'
+              ]">Document Tracking</button>
+        </div>
+
+        <!-- Appointment Table -->
+        <div v-if="activeTab === 'appointment'" class="bg-appointment p-4 rounded-b-2xl -mt-2">
+          <div class="grid grid-cols-6 font-bold bg-gray-200 text-black p-2 rounded-lg text-center">
+            <div>No.</div>
+            <div>Student ID</div>
+            <div>Date</div>
+            <div>Topic</div>
+            <div>Note</div>
+            <div>Status</div>
+            <div></div>
+          </div>
+          <div v-for="(item, index) in filteredAppointments" :key="item.id"
+            class="grid grid-cols-6 bg-white text-black p-2 mt-2 rounded-lg text-center shadow">
+            <div>{{ index + 1 }}</div>
+            <div>{{ item.studentID }}</div>
+            <div>{{ item.date }}</div>
+            <div>{{ item.topic }}</div>
+            <div>{{ item.note }}</div>
+            <div :class="getStatusClass(item.status)">{{ item.status }}</div>
+          </div>
+          <div v-if="filteredAppointments.length === 0" class="text-center py-6 text-white">No appointments found.
+          </div>
+        </div>
+
+        <!-- Document Table -->
+        <div v-if="activeTab === 'document'" class="bg-document p-4 rounded-b-2xl -mt-2">
+          <div class="grid grid-cols-6 font-bold bg-gray-200 text-black p-2 rounded-lg text-center">
+            <div>No.</div>
+            <div>Student ID</div>
+            <div>Date</div>
+            <div>Topic</div>
+            <div>Note</div>
+            <div>Status</div>
+            <div></div>
+          </div>
+          <div v-for="(item, index) in filteredDocuments" :key="item.id"
+            class="grid grid-cols-6 bg-white text-black p-2 mt-2 rounded-lg text-center shadow">
+            <div>{{ index + 1 }}</div>
+            <div>{{ item.studentID }}</div>
+            <div>{{ item.date }}</div>
+            <div>{{ item.topic }}</div>
+            <div>{{ item.note }}</div>
+            <div :class="getStatusClass(item.status)">{{ item.status }}</div>
+            <div v-if="filteredDocuments.length === 0" class="text-center py-6 text-white">No documents found.</div>
+          </div>
+        </div>
+
+        <!-- Back -->
+        <button @click="page = 'list'" class="mt-6 bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">←Back</button>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    <!-- JavaScript -->
+    <script>
+      // Toggle sidebar
+      const toggleBtn = document.getElementById('menu-toggle');
+      const sidebar = document.getElementById('sidebar');
+      const mainContent = document.getElementById('main-content');
+
+      toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('hidden');
+        mainContent.classList.toggle('full');
+      });
+
+      // Toggle language active
+      const langEN = document.getElementById('lang-en');
+      const langTH = document.getElementById('lang-th');
+
+      langEN.addEventListener('click', () => {
+        langEN.classList.add('active');
+        langTH.classList.remove('active');
+      });
+
+      langTH.addEventListener('click', () => {
+        langTH.classList.add('active');
+        langEN.classList.remove('active');
+      });
+
+      let editTargetRow = null;
+
+      function addStaff() {
+        const name = document.getElementById('addName').value;
+        const responsibility = document.getElementById('addResponsibilities').value;
+        const table = document.getElementById('staffTable');
+        const rowCount = table.querySelectorAll('.staff-row').length + 1;
+
+        const newRow = `
+    <tr><td colspan="4">
+      <div class="card-row staff-row">
+        <div style="width: 10%;">${rowCount}</div>
+        <div style="width: 25%;"><strong>${name}</strong></div>
+        <div style="width: 45%;">${responsibility}</div>
+        <div style="width: 20%;">
+          <button class="btn-disable" onclick="deleteRow(this)">Disable</button>
+          <button class="btn-edit" onclick="editRow(this)">Edit</button>
+        </div>
+      </div>
+    </td></tr>`;
+
+        table.insertAdjacentHTML('beforeend', newRow);
+        document.getElementById('addName').value = '';
+        document.getElementById('addResponsibilities').selectedIndex = 0;
+        bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+      }
+
+      function editRow(button) {
+        const row = button.closest('.card-row');
+        editTargetRow = row;
+        const cells = row.children;
+        document.getElementById('editName').value = cells[1].innerText.trim();
+        document.getElementById('editResponsibilities').value = cells[2].innerText.trim();
+        new bootstrap.Modal(document.getElementById('editModal')).show();
+      }
+
+      function saveEdit() {
+        if (editTargetRow) {
+          const cells = editTargetRow.children;
+          cells[1].innerHTML = "<strong>" + document.getElementById('editName').value + "</strong>";
+          cells[2].innerText = document.getElementById('editResponsibilities').value;
+          bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+        }
+      }
+
+      function deleteRow(button) {
+        const tr = button.closest('tr');
+        tr.remove();
+        updateRowNumbers();
+      }
+
+      function updateRowNumbers() {
+        const rows = document.querySelectorAll('.staff-row');
+        rows.forEach((row, index) => {
+          row.children[0].innerText = index + 1;
+        });
+      }
+
+      function switchSection(targetId) {
+        document.querySelectorAll('.page-section').forEach(section => {
+          section.classList.remove('active');
+        });
+        document.getElementById(targetId).classList.add('active');
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+          item.classList.remove('active');
+          if (item.getAttribute('data-target') === targetId) {
+            item.classList.add('active');
+          }
+        });
+      }
+
+      document.getElementById('menu-toggle').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('hidden');
+        document.getElementById('main-content').classList.toggle('full');
+      });
+
+      // Highlight active nav + show/hide page sections
+      const navItems = document.querySelectorAll('.nav-item');
+      const sections = document.querySelectorAll('.page-section');
+
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          navItems.forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+
+          const target = item.getAttribute('data-target');
+          sections.forEach(sec => {
+            sec.classList.remove('active');
+            if (sec.id === target) {
+              sec.classList.add('active');
+            }
+          });
+        });
+      });
+
+      const { createApp } = Vue;
+      createApp({
+        data() {
+          return {
+            page: 'list',
+            activeTab: 'appointment',
+            selectedPerson: null,
+            staff: [
+              { id: 1, name: 'P_Oi', image: 'Asset/P_Oi.png' },
+              { id: 2, name: 'P_Nim', image: 'Asset/P_Nim.png' },
+              { id: 3, name: 'P_Lek', image: 'Asset/P_Lek.png' },
+              { id: 4, name: 'P_Angoon', image: 'Asset/P_Angoon.png' },
+              { id: 5, name: 'PP', image: 'Asset/PP.png' }
+            ],
+            appointments: [
+              { id: 1, staffId: 1, studentID: '65xxxxxxxx', date: '2025-03-01', topic: 'Course Registration', note: '-', status: 'Approved' },
+              { id: 2, staffId: 2, studentID: '65xxxxxxxx', date: '2025-03-05', topic: 'Advising Meeting', note: '-', status: 'Reject' },
+              { id: 3, staffId: 1, studentID: '65xxxxxxxx', date: '2025-03-10', topic: 'Training', note: '-', status: 'Approved' }
+            ],
+            documents: [
+              { id: 1, staffId: 1, studentID: '65xxxxxxxx', date: '2025-04-01', topic: 'Request Certificate', note: '-', status: 'Approved' },
+              { id: 2, staffId: 3, studentID: '65xxxxxxxx', date: '2025-04-03', topic: 'Request Transcript', note: '-', status: 'Reject' },
+              { id: 3, staffId: 1, studentID: '65xxxxxxxx', date: '2025-04-05', topic: 'Request Other Document', note: '-', status: 'Pending' }
+            ],
+            staffList: [
+            { name: 'Staff A', role: 'Course registration' },
+            { name: 'Staff B', role: 'Tuition fee deferment' },
+            { name: 'Staff C', role: 'University activity' },
+            { name: 'Staff D', role: 'Student assistant' },
+            { name: 'Staff E', role: 'Course registration' }
+          ],
+          newStaff: { name: '', role: '' },
+          showAdd: false,
+          showEdit: false,
+          editIndex: null,
+          editData: { name: '', role: '' }
+          };
+        },
+        computed: {
+          filteredAppointments() {
+            if (!this.selectedPerson) return [];
+            return this.appointments.filter(item => item.staffId === this.selectedPerson.id);
+          },
+          filteredDocuments() {
+            if (!this.selectedPerson) return [];
+            return this.documents.filter(item => item.staffId === this.selectedPerson.id);
+          }
+        },
+        methods: {
+          selectPerson(person) {
+            this.selectedPerson = person;
+            this.activeTab = 'appointment';
+            this.page = 'detail';
+          },
+          getStatusClass(status) {
+            if (status === 'Approved') return 'text-green-600 font-semibold';
+            if (status === 'Reject') return 'text-red-600 font-semibold';
+            if (status === 'Pending') return 'text-yellow-500 font-semibold';
+            return 'text-gray-600';
+          },
+          addStaff() {
+          if (this.newStaff.name && this.newStaff.role) {
+            this.staffList.push({ ...this.newStaff });
+            this.newStaff = { name: '', role: '' };
+            this.showAdd = false;
+          }
+        },
+        removeStaff(index) {
+          this.staffList.splice(index, 1);
+        },
+        editStaff(index) {
+          this.editIndex = index;
+          this.editData = { ...this.staffList[index] };
+          this.showEdit = true;
+        },
+        saveEdit() {
+          if (this.editData.name && this.editData.role) {
+            this.staffList.splice(this.editIndex, 1, { ...this.editData });
+            this.showEdit = false;
+          }
+        }
+        }
+      }).mount('#app');
+
+      // ✅ Logout button alert
+      const logoutBtn = document.getElementById('logout-btn');
+      logoutBtn.addEventListener('click', () => {
+        alert('Are you sure to log out?');
+      });
+
+      const termData = {
+        term1: {
+          weeklyUsers: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            appointment: [8, 5, 6, 9, 7],
+            tracking: [4, 3, 6, 5, 2],
+          },
+          overallRating: {
+            labels: ['Appointment', 'Document Tracking'],
+            datasets: [
+              { label: 'Fast Service', data: [3, 5], bg: '#2563EB' },
+              { label: 'Helpful Staff', data: [4, 3], bg: '#F59E0B' },
+              { label: 'On Time', data: [2, 1], bg: '#EF4444' },
+            ],
+          },
+        },
+        term2: {
+          weeklyUsers: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            appointment: [5, 6, 4, 7, 6],
+            tracking: [2, 3, 2, 4, 3],
+          },
+          overallRating: {
+            labels: ['Appointment', 'Document Tracking'],
+            datasets: [
+              { label: 'Fast Service', data: [2, 4], bg: '#2563EB' },
+              { label: 'Helpful Staff', data: [3, 2], bg: '#F59E0B' },
+              { label: 'On Time', data: [3, 2], bg: '#EF4444' },
+            ],
+          },
+        },
+        summer: {
+          weeklyUsers: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            appointment: [3, 2, 1, 4, 3],
+            tracking: [1, 2, 1, 1, 2],
+          },
+          overallRating: {
+            labels: ['Appointment', 'Document Tracking'],
+            datasets: [
+              { label: 'Fast Service', data: [1, 2], bg: '#2563EB' },
+              { label: 'Helpful Staff', data: [2, 1], bg: '#F59E0B' },
+              { label: 'On Time', data: [2, 2], bg: '#EF4444' },
+            ],
+          },
+        },
+      };
+
+      const ctx1 = document.getElementById('weeklyUsersChart').getContext('2d');
+      const ctx2 = document.getElementById('overallRatingChart').getContext('2d');
+
+      let weeklyChart, ratingChart;
+
+      function renderCharts(term) {
+        const data = termData[term];
+
+        // Weekly Users Chart
+        if (weeklyChart) weeklyChart.destroy();
+        weeklyChart = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: data.weeklyUsers.labels,
+            datasets: [
+              {
+                label: 'Appointment',
+                data: data.weeklyUsers.appointment,
+                backgroundColor: '#2563EB',
+              },
+              {
+                label: 'Document Tracking',
+                data: data.weeklyUsers.tracking,
+                backgroundColor: '#F59E0B',
+              },
+            ],
+          },
+          options: { responsive: true, scales: { y: { beginAtZero: true } } },
+        });
+
+        // Overall Rating Chart
+        if (ratingChart) ratingChart.destroy();
+        ratingChart = new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: data.overallRating.labels,
+            datasets: data.overallRating.datasets.map(d => ({
+              label: d.label,
+              data: d.data,
+              backgroundColor: d.bg,
+            })),
+          },
+          options: { responsive: true, scales: { y: { beginAtZero: true } } },
+        });
+      }
+
+      // Initial load
+      renderCharts('term1');
+
+      // Dropdown listener
+      document.getElementById('term').addEventListener('change', e => {
+        renderCharts(e.target.value);
+      });
+    </script>
+
+</body>
+
+</html>
