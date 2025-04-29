@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Navbar Layout - Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    .sidebar {
+      width: 220px;
+      background-color: #7e6ccf;
+      color: white;
+      padding-top: 2px;
+      height: 100vh;
+      position: fixed;
+      transition: transform 0.3s ease;
+    }
+    .sidebar.hidden { transform: translateX(-100%); }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .nav-item i { margin-right: 12px; }
+    .nav-item:hover { background-color: #6b5bb5; }
+    .nav-item.active {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      font-weight: bold;
+      border-left: 5px solid white;
+    }
+    .topbar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 60px;
+      background-color: #a89ee0;
+      color: white;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 2;
+    }
+    .top-left { display: flex; align-items: center; }
+    .top-left i { font-size: 24px; margin-right: 15px; cursor: pointer; }
+    .top-left img { height: 50px; object-fit: contain; margin-top: 5px; }
+    .top-right { display: flex; align-items: center; gap: 15px; }
+    .lang-toggle span {
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+    .lang-toggle .active {
+      background-color: white;
+      color: #3f51b5;
+      font-weight: bold;
+    }
+    .logout-button {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-right: 40px;
+    }
+    .logout-button:hover {
+      background-color: white;
+      color: #7e6ccf;
+    }
+    .main-content {
+      margin-left: 220px;
+      margin-top: 60px;
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
+    .main-content.full { margin-left: 0; }
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    /* Management Table Styles */
+    .custom-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+    }
+    .card-row {
+      background: #f1f1f1;
+      border-radius: 15px;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-row.header {
+      background: #d1d1d1;
+      font-weight: bold;
+    }
+    .btn-disable {
+      background-color: #ff6b6b;
+      color: white;
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: none;
+    }
+    .btn-edit {
+      background-color: #f9c74f;
+      color: black;
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: none;
+      margin-left: 5px;
+    }
+    .add-btn {
+      background: #4cd964;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+    }
+    .modal-content {
+      border-radius: 20px;
+    }
+    .form-select, .form-control {
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="top-left">
+    <i class="bi bi-list" id="menu-toggle"></i>
+    <img src="https://upload.wikimedia.org/wikipedia/en/7/7e/Logo_of_Mae_Fah_Luang_University.svg" height="40" alt="logo">
+    <strong class="ms-2">REG.MFU</strong>
+  </div>
+  <div class="top-right">
+    <div class="lang-toggle">
+      <span id="lang-en" class="active">EN</span> / 
+      <span id="lang-th">TH</span>
+    </div>
+    <button id="logout-btn" class="logout-button">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </button>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="nav-item active" data-target="dashboard" onclick="switchSection('dashboard')">
+    <i class="bi bi-speedometer2"></i><span>Dashboard</span>
+  </div>
+  <div class="nav-item" data-target="management" onclick="switchSection('management')">
+    <i class="bi bi-people-fill"></i><span>Management</span>
+  </div>
+  <div class="nav-item" data-target="history" onclick="switchSection('history')">
+    <i class="bi bi-clock-history"></i><span>History</span>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="main-content">
+  <div id="dashboard" class="page-section active">
+    <h2>Dashboard</h2>
+    <p>This is the dashboard content.</p>
+  </div>
+
+  <!-- Management Content -->
+  <div id="management" class="page-section">
+    <div class="d-flex justify-content-end mb-3">
+      <button class="add-btn" data-bs-toggle="modal" data-bs-target="#addModal">Add</button>
+    </div>
+    <table class="custom-table">
+      <tbody id="staffTable">
+        <tr><td colspan="4">
+          <div class="card-row header">
+            <div style="width: 10%;">No</div>
+            <div style="width: 25%;">Name</div>
+            <div style="width: 45%;">Responsibilities</div>
+            <div style="width: 20%;">Status</div>
+          </div>
+        </td></tr>
+        <tr><td colspan="4">
+          <div class="card-row staff-row">
+            <div style="width: 10%;">1</div>
+            <div style="width: 25%;"><strong>Staff A</strong></div>
+            <div style="width: 45%;">Course registration</div>
+            <div style="width: 20%;">
+              <button class="btn-disable" onclick="deleteRow(this)">Disable</button>
+              <button class="btn-edit" onclick="editRow(this)">Edit</button>
+            </div>
+          </div>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="history" class="page-section">
+    <h2>History</h2>
+    <p>This is the history content.</p>
+  </div>
+</div>
+
+<!-- Modal: Add -->
+<div class="modal fade" id="addModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Add</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="addName" class="form-control mb-3" placeholder="Name">
+        <select id="addResponsibilities" class="form-select">
+          <option selected disabled>Responsibilities</option>
+          <option>Course registration</option>
+          <option>Tuition fee deferment</option>
+          <option>University activities</option>
+          <option>Student assistant</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success" onclick="addStaff()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Edit -->
+<div class="modal fade" id="editModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit selected staff</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="editName" class="form-control mb-3">
+        <select id="editResponsibilities" class="form-select">
+          <option>Course registration</option>
+          <option>Tuition fee deferment</option>
+          <option>University activities</option>
+          <option>Student assistant</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-success" onclick="saveEdit()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let editTargetRow = null;
+
+function addStaff() {
+  const name = document.getElementById('addName').value;
+  const responsibility = document.getElementById('addResponsibilities').value;
+  const table = document.getElementById('staffTable');
+  const rowCount = table.querySelectorAll('.staff-row').length + 1;
+
+  const newRow = `
+    <tr><td colspan="4">
+      <div class="card-row staff-row">
+        <div style="width: 10%;">${rowCount}</div>
+        <div style="width: 25%;"><strong>${name}</strong></div>
+        <div style="width: 45%;">${responsibility}</div>
+        <div style="width: 20%;">
+          <button class="btn-disable" onclick="deleteRow(this)">Disable</button>
+          <button class="btn-edit" onclick="editRow(this)">Edit</button>
+        </div>
+      </div>
+    </td></tr>`;
+
+  table.insertAdjacentHTML('beforeend', newRow);
+  document.getElementById('addName').value = '';
+  document.getElementById('addResponsibilities').selectedIndex = 0;
+  bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+}
+
+function editRow(button) {
+  const row = button.closest('.card-row');
+  editTargetRow = row;
+  const cells = row.children;
+  document.getElementById('editName').value = cells[1].innerText.trim();
+  document.getElementById('editResponsibilities').value = cells[2].innerText.trim();
+  new bootstrap.Modal(document.getElementById('editModal')).show();
+}
+
+function saveEdit() {
+  if (editTargetRow) {
+    const cells = editTargetRow.children;
+    cells[1].innerHTML = "<strong>" + document.getElementById('editName').value + "</strong>";
+    cells[2].innerText = document.getElementById('editResponsibilities').value;
+    bootstrap.Modal.getInstance(document.getElementById('editModal')).hide();
+  }
+}
+
+function deleteRow(button) {
+  const tr = button.closest('tr');
+  tr.remove();
+  updateRowNumbers();
+}
+
+function updateRowNumbers() {
+  const rows = document.querySelectorAll('.staff-row');
+  rows.forEach((row, index) => {
+    row.children[0].innerText = index + 1;
+  });
+}
+
+function switchSection(targetId) {
+  document.querySelectorAll('.page-section').forEach(section => {
+    section.classList.remove('active');
+  });
+  document.getElementById(targetId).classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.classList.remove('active');
+    if (item.getAttribute('data-target') === targetId) {
+      item.classList.add('active');
+    }
+  });
+}
+
+document.getElementById('menu-toggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('hidden');
+  document.getElementById('main-content').classList.toggle('full');
+});
+
+
+// ✅ ภาษา toggle
+const langEN = document.getElementById('lang-en');
+const langTH = document.getElementById('lang-th');
+
+langEN.addEventListener('click', () => {
+  langEN.classList.add('active');
+  langTH.classList.remove('active');
+  // ✅ เพิ่มเอฟเฟกต์หรือการเปลี่ยนภาษาได้ที่นี่
+});
+
+langTH.addEventListener('click', () => {
+  langTH.classList.add('active');
+  langEN.classList.remove('active');
+  // ✅ เพิ่มเอฟเฟกต์หรือการเปลี่ยนภาษาได้ที่นี่
+});
+
+// ✅ Logout alert
+document.getElementById('logout-btn').addEventListener('click', () => {
+  const confirmLogout = confirm("Are you sure you want to log out?");
+  if (confirmLogout) {
+    // ✅ ตัวอย่าง: redirect หรือ logout จริง
+    alert("Logged out successfully!");
+    // window.location.href = 'login.html'; // ← ถ้าคุณมีหน้าล็อกอิน
+  }
+});
+
+
+</script>
+
+</body>
+</html>  
