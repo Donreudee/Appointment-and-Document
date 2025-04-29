@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History</title>
+    <link rel="stylesheet" href="/CSS/AdminHistory.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Staff Members</h1>
+        <div class="card-container">
+          <a v-for="staff in staffs" :key="staff.id" :href="'profile' + staff.id + '.html'"
+          class="card-link">
+            <div class="card">
+              <img :src="staff.image" alt="Staff Image">
+              <div class="card-content">
+                <h3>{{ staff.name }}</h3>
+                <!-- <p>{{ staff.position }}</p> -->
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <!-- โหลด Vue.js -->
+      <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+      <script>
+        const { createApp } = Vue
+    
+        createApp({
+          data() {
+            return {
+              staffs: [
+                { id: 1, name: 'P_Oi', position: 'Manager', image: 'P_Oi.png' },
+                { id: 2, name: 'P_Nim', position: 'Engineer', image: 'P_Nim.png' },
+                { id: 3, name: 'P_Lek', position: 'Designer', image: 'P_Lek.png' },
+                { id: 4, name: 'P_Angoon', position: 'Designer', image: 'P_Angoon.png' },
+                { id: 5, name: 'PP', position: 'Designer', image: 'PP.png' },
+              ]
+            }
+          }
+          
+        }).mount('#app')
+
+
+      </script>
+
+    
+</body>
+
+</html>
