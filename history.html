@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Navbar Layout</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/CSS/AdminHistory.css">
+  <link rel="stylesheet" href="/CSS/navbar.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    .bg-appointment { background-color: #4D55CC; }
+    .bg-document { background-color: #B5A8D5; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: #7e6ccf;
+      color: white;
+      padding-top: 2px;
+      height: 100vh;
+      position: fixed;
+      transition: transform 0.3s ease;
+      transform: translateX(0);
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      cursor: pointer;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .nav-item i {
+      margin-right: 12px;
+    }
+
+    .nav-item:hover {
+      background-color: #6b5bb5;
+    }
+
+    /* ✅ Active nav item - Drop shadow */
+    .nav-item.active {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      color: white;
+      font-weight: bold;
+      border-left: 5px solid white;
+    }
+
+    /* Topbar */
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: #a89ee0;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 2;
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .top-left i {
+      font-size: 24px;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .top-left img {
+      height: 50px;
+      object-fit: contain;
+      margin-top: 5px;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .lang-toggle span {
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .lang-toggle .active {
+      background-color: white;
+      color: #3f51b5;
+      font-weight: bold;
+    }
+
+    /* ✅ Logout button style */
+    .logout-button {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: background-color 0.3s, color 0.3s;
+      margin-right: 40px; /* ✅ เพิ่มพื้นที่จากขอบขวา */
+    }
+
+    .logout-button:hover {
+      background-color: white;
+      color: #7e6ccf;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 220px;
+      margin-top: 60px;
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content.full {
+      margin-left: 0;
+    }
+
+    /* ✅ Section content */
+    .page-section {
+      display: none;
+      padding-top: 0;
+    }
+
+    .page-section.active {
+      display: block;
+    }
+
+    @media screen and (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-[#f4f4f4] text-gray-800">
+  <div id="app">
+<!-- 🔷 Topbar -->
+  <div class="fixed top-0 left-0 w-full h-16 bg-[#a89ee0] text-white flex items-center justify-between px-6 z-50">
+    <div class="flex items-center">
+      <!-- Hamburger Button -->
+      <button @click="sidebarOpen = !sidebarOpen" class="text-2xl mr-4 block">
+        <i class="bi bi-list"></i>
+      </button>
+      <img src="https://upload.wikimedia.org/wikipedia/en/7/7e/Logo_of_Mae_Fah_Luang_University.svg" class="h-10 mr-3">
+      <strong>REG.MFU</strong>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex gap-1">
+        <span class="bg-white text-[#7e6ccf] px-2 py-1 rounded font-bold">EN</span> /
+        <span class="text-white px-2 py-1 rounded">TH</span>
+      </div>
+      <button id="logout-btn" class="border border-white px-3 py-1 rounded hover:bg-white hover:text-[#7e6ccf] flex items-center gap-2">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </button>
+    </div>
+  </div>
+
+<!-- Sidebar -->
+<div
+  class="sidebar transition-transform duration-300 ease-in-out"
+  :class="{ '-translate-x-full': !sidebarOpen }"
+  id="sidebar"
+>
+   <!-- เมนู Dashboard (กำลังใช้งานอยู่) -->
+   <a href="dashboard.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5] ">
+    <i class="bi bi-speedometer2 mr-3"></i> <span class="ml-1">Dashboard</span>
+  </a>
+  <!-- เมนู Management -->
+  <a href="management.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5] ">
+    <i class="bi bi-people-fill mr-3"></i> <span class="ml-1">Management</span>
+  </a>
+  <!-- เมนู History -->
+  <a href="history.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5] font-bold shadow-[inset_5px_0_0_white]">
+    <i class="bi bi-clock-history mr-3"></i> <span class="ml-1">History</span>
+  </a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="main-content">
+  <!-- <div id="dashboard" class="page-section active">
+    <h2>Dashboard</h2>
+    <p>This is the dashboard content.</p>
+  </div>
+
+  <div id="management" class="page-section">
+    <h2>Management</h2>
+    <p>This is the management content.</p>
+  </div> -->
+
+  <!-- เอา v-if คุมแทนแทน id="history" -->
+<div v-if="true" class="transition-all duration-300 pt-20 px-6 " :class="{ 'ml-56': sidebarOpen, 'ml-0': !sidebarOpen }" >
+    <!-- <div id="app"> -->
+      <!-- 🔹 หน้า: รายชื่อพนักงาน -->
+      <div v-if="page === 'list'">
+        <h1 class="text-4xl font-bold mb-8 text-gray-800">History</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+          <div v-for="person in staff" :key="person.id"
+               @click="selectPerson(person)"
+               class="bg-white rounded-xl shadow-md p-6 cursor-pointer hover:shadow-lg text-center transition">
+            <img :src="person.image" class="w-28 h-28 mx-auto rounded-full object-cover mb-4" />
+            <p class="font-bold text-xl">{{ person.name }}</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- 🔹 หน้า: รายละเอียดพร้อมแท็บ -->
+      <div v-if="page === 'detail'">
+        <h1 class="text-3xl font-bold mb-4 text-gray-800">{{ selectedPerson.name }}'s History</h1>
+  
+        <!-- Tabs -->
+        <div class="flex gap-1 mb-0">
+          <button @click="activeTab = 'appointment'"
+            :class="[
+              'px-4 py-2 font-semibold rounded-t-lg z-20',
+              activeTab === 'appointment' ? 'bg-[#4D55CC] text-white' : 'bg-[#B5A8D5] text-white opacity-70'
+            ]">Appointment</button>
+  
+          <button @click="activeTab = 'document'"
+            :class="[
+              'px-4 py-2 font-semibold rounded-t-lg z-20',
+              activeTab === 'document' ? 'bg-[#B5A8D5] text-white' : 'bg-[#4D55CC] text-white opacity-70'
+            ]">Document Tracking</button>
+        </div>
+  
+        <!-- Appointment Table -->
+        <div v-if="activeTab === 'appointment'" class="bg-appointment p-4 rounded-b-2xl -mt-2">
+          <div class="grid grid-cols-6 font-bold bg-gray-200 text-black p-2 rounded-lg text-center">
+            <div>No.</div><div>Student ID</div><div>Date</div><div>Topic</div><div>Note</div><div>Status</div><div></div>
+          </div>
+          <div v-for="(item, index) in filteredAppointments" :key="item.id"
+               class="grid grid-cols-6 bg-white text-black p-2 mt-2 rounded-lg text-center shadow">
+            <div>{{ index + 1 }}</div>
+            <div>{{ item.studentID }}</div>
+            <div>{{ item.date }}</div>
+            <div>{{ item.topic }}</div>
+            <div>{{ item.note }}</div>
+            <div :class="getStatusClass(item.status)">{{ item.status }}</div>
+            
+          </div>
+          <div v-if="filteredAppointments.length === 0" class="text-center py-6 text-white">No appointments found.</div>
+        </div>
+  
+        <!-- Document Table -->
+        <div v-if="activeTab === 'document'" class="bg-document p-4 rounded-b-2xl -mt-2">
+          <div class="grid grid-cols-6 font-bold bg-gray-200 text-black p-2 rounded-lg text-center">
+            <div>No.</div><div>Student ID</div><div>Date</div><div>Topic</div><div>Note</div><div>Status</div><div></div>
+          </div>
+          <div v-for="(item, index) in filteredDocuments" :key="item.id"
+               class="grid grid-cols-6 bg-white text-black p-2 mt-2 rounded-lg text-center shadow">
+            <div>{{ index + 1 }}</div>
+            <div>{{ item.studentID }}</div>
+            <div>{{ item.date }}</div>
+            <div>{{ item.topic }}</div>
+            <div>{{ item.note }}</div>
+            <div :class="getStatusClass(item.status)">{{ item.status }}</div>
+            
+          </div>
+          <div v-if="filteredDocuments.length === 0" class="text-center py-6 text-white">No documents found.</div>
+        </div>
+  
+        <!-- Back -->
+        <button @click="page = 'list'" class="mt-6 bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400">← Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<!-- JavaScript -->
+<script>
+ 
+  // Toggle sidebar
+  // const toggleBtn = document.getElementById('menu-toggle');
+  // const sidebar = document.getElementById('sidebar');
+  // const mainContent = document.getElementById('main-content');
+
+  // toggleBtn.addEventListener('click', () => {
+  //   sidebar.classList.toggle('hidden');
+  //   mainContent.classList.toggle('full');
+  // });
+
+  // Toggle language active
+  const langEN = document.getElementById('lang-en');
+  const langTH = document.getElementById('lang-th');
+
+  // langEN.addEventListener('click', () => {
+  //   langEN.classList.add('active');
+  //   langTH.classList.remove('active');
+  // });
+
+  // langTH.addEventListener('click', () => {
+  //   langTH.classList.add('active');
+  //   langEN.classList.remove('active');
+  // });
+
+  // Highlight active nav + show/hide page sections
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('.page-section');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      navItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+
+      const target = item.getAttribute('data-target');
+      sections.forEach(sec => {
+        sec.classList.remove('active');
+        if (sec.id === target) {
+          sec.classList.add('active');
+        }
+      });
+    });
+  });
+  const { createApp } = Vue;
+    createApp({
+      data() {
+        return {
+          sidebarOpen: true,
+          page: 'list',
+          activeTab: 'appointment',
+          selectedPerson: null,
+          staff: [
+            { id: 1, name: 'P_Oi', image: 'https://via.placeholder.com/100?text=P_Oi' },
+            { id: 2, name: 'P_Nim', image: 'https://via.placeholder.com/100?text=P_Nim' },
+            { id: 3, name: 'P_Lek', image: 'https://via.placeholder.com/100?text=P_Lek' },
+            { id: 4, name: 'P_Angoon', image: 'P_Angoon.png'},
+            { id: 5, name: 'PP', image: 'https://via.placeholder.com/100?text=PP' }
+          ],
+          appointments: [
+            { id: 1, staffId: 1, studentID: '65xxxxxxxx', date: '2025-03-01', topic: 'Course Registration', note: '-', status: 'Approved' },
+            { id: 2, staffId: 2, studentID: '65xxxxxxxx', date: '2025-03-05', topic: 'Advising Meeting', note: '-', status: 'Reject' },
+            { id: 3, staffId: 1, studentID: '65xxxxxxxx', date: '2025-03-10', topic: 'Training', note: '-', status: 'Approved' }
+          ],
+          documents: [
+            { id: 1, staffId: 1, studentID: '65xxxxxxxx', date: '2025-04-01', topic: 'Request Certificate', note: '-', status: 'Approved' },
+            { id: 2, staffId: 3, studentID: '65xxxxxxxx', date: '2025-04-03', topic: 'Request Transcript', note: '-', status: 'Reject' },
+            { id: 3, staffId: 1, studentID: '65xxxxxxxx', date: '2025-04-05', topic: 'Request Other Document', note: '-', status: 'Pending' }
+          ]
+        };
+      },
+      computed: {
+        filteredAppointments() {
+          if (!this.selectedPerson) return [];
+          return this.appointments.filter(item => item.staffId === this.selectedPerson.id);
+        },
+        filteredDocuments() {
+          if (!this.selectedPerson) return [];
+          return this.documents.filter(item => item.staffId === this.selectedPerson.id);
+        }
+      },
+      methods: {
+        selectPerson(person) {
+          this.selectedPerson = person;
+          this.activeTab = 'appointment';
+          this.page = 'detail';
+        },
+        getStatusClass(status) {
+          if (status === 'Approved') return 'text-green-600 font-semibold';
+          if (status === 'Reject') return 'text-red-600 font-semibold';
+          if (status === 'Pending') return 'text-yellow-500 font-semibold';
+          return 'text-gray-600';
+        }
+      }
+    }).mount('#app');
+
+  // ✅ Logout button alert
+  const logoutBtn = document.getElementById('logout-btn');
+  logoutBtn.addEventListener('click', () => {
+    alert('Are you sure you want to log out?');
+  });
+</script>
+
+</body>
+</html>
