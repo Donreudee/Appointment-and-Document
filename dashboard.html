@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    /* เพิ่ม CSS เพื่อรักษาการออกแบบเดิม */
+    .bg-custom-purple {
+      background-color: #7e6ccf;
+    }
+    .bg-custom-light-purple {
+      background-color: #a89ee0;
+    }
+    .text-custom-purple {
+      color: #7e6ccf;
+    }
+    .hover-custom-purple:hover {
+      background-color: #6b5bb5;
+    }
+  </style>
+</head>
+<body class="bg-[#f4f4f4] text-gray-800">
+  <div id="app">
+    <div class="fixed top-0 left-0 w-full h-16 bg-[#a89ee0] text-white flex items-center justify-between px-6 z-50">
+      <div class="flex items-center">
+        <button @click="sidebarOpen = !sidebarOpen" class="text-2xl mr-4 block">
+          <i class="bi bi-list"></i>
+        </button>
+        <img src="https://upload.wikimedia.org/wikipedia/en/7/7e/Logo_of_Mae_Fah_Luang_University.svg" class="h-10 mr-3">
+        <strong>REG.MFU</strong>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex gap-1">
+          <span class="bg-white text-[#7e6ccf] px-2 py-1 rounded font-bold">EN</span>
+          /
+          <span class="text-white px-2 py-1 rounded">TH</span>
+        </div>
+        <button class="border border-white px-3 py-1 rounded hover:bg-white hover:text-[#7e6ccf] flex items-center gap-2">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+      </div>
+    </div>
+
+
+    <div :class="[
+      'fixed top-16 left-0 h-[calc(100vh-4rem)] w-48 bg-[#7e6ccf] text-white flex flex-col transition-transform duration-300 z-40',
+      sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+    ]">
+      <a href="dashboard.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5] font-bold shadow-[inset_5px_0_0_white]">
+        <i class="bi bi-speedometer2 mr-3"></i> <span class="ml-1">Dashboard</span>
+      </a>
+      <a href="management.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5]">
+        <i class="bi bi-people-fill mr-3"></i> <span class="ml-1">Management</span>
+      </a>
+      <a href="history.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5]">
+        <i class="bi bi-clock-history mr-3"></i> <span class="ml-1">History</span>
+      </a>
+    </div>
+
+
+    <div :class="[ 'transition-all duration-300 pt-20 px-4 sm:px-6', sidebarOpen ? 'ml-48' : 'ml-0' ]">
+      <div class="mb-6 flex justify-end gap-4">
+        <select id="semesterSelect" class="px-3 py-2 rounded border bg-white text-gray-800">
+          <option>Semester 1</option>
+          <option>Semester 2</option>
+          <option>Summer</option>
+        </select>
+        <!-- Weekly Calendar Selection -->
+        <div class="relative">
+          <button id="calendarToggle" class="px-3 py-2 rounded border bg-white text-gray-800 flex items-center">
+            <span id="currentWeekDisplay">Week 1 (May 1-7)</span>
+            <i class="bi bi-calendar3 ml-2"></i>
+          </button>
+          
+          <!-- Calendar popup (initially hidden) -->
+          <div id="calendarPopup" class="absolute right-0 top-full mt-1 bg-white shadow-lg rounded p-4 border z-50 hidden w-72">
+            <h4 class="text-center mb-2 font-bold">Select Week</h4>
+            <div class="mb-4">
+              <!-- Week selection buttons -->
+              <div class="grid grid-cols-1 gap-2">
+                <button class="week-button py-2 px-3 rounded text-left transition-colors hover:bg-[#a89ee0] hover:text-white cursor-pointer bg-[#7e6ccf] text-white" data-week="week1">
+                  Week 1: May 1-7
+                </button>
+                <button class="week-button py-2 px-3 rounded text-left transition-colors hover:bg-[#a89ee0] hover:text-white cursor-pointer" data-week="week2">
+                  Week 2: May 8-14
+                </button>
+                <button class="week-button py-2 px-3 rounded text-left transition-colors hover:bg-[#a89ee0] hover:text-white cursor-pointer" data-week="week3">
+                  Week 3: May 15-21
+                </button>
+                <button class="week-button py-2 px-3 rounded text-left transition-colors hover:bg-[#a89ee0] hover:text-white cursor-pointer" data-week="week4">
+                  Week 4: May 22-28
+                </button>
+                <button class="week-button py-2 px-3 rounded text-left transition-colors hover:bg-[#a89ee0] hover:text-white cursor-pointer" data-week="week5">
+                  Week 5: May 29-June 4
+                </button>
+              </div>
+            </div>
+            
+            <div class="border-t pt-2">
+              <h5 class="text-center mb-2 text-sm text-gray-600">May 2025</h5>
+              <div class="grid grid-cols-7 gap-1 text-center">
+                <div class="text-xs font-bold">S</div>
+                <div class="text-xs font-bold">M</div>
+                <div class="text-xs font-bold">T</div>
+                <div class="text-xs font-bold">W</div>
+                <div class="text-xs font-bold">T</div>
+                <div class="text-xs font-bold">F</div>
+                <div class="text-xs font-bold">S</div>
+                
+                <!-- Week 1: April 27-May 3 -->
+                <div class="text-xs text-gray-400">27</div>
+                <div class="text-xs text-gray-400">28</div>
+                <div class="text-xs text-gray-400">29</div>
+                <div class="text-xs text-gray-400">30</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">1</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">2</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">3</div>
+                
+                <!-- Week 1-2 -->
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">4</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">5</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">6</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">7</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">8</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">9</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">10</div>
+                
+                <!-- Week 2-3 -->
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">11</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">12</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">13</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">14</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">15</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">16</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">17</div>
+                
+                <!-- Week 3-4 -->
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">18</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">19</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">20</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">21</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">22</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">23</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">24</div>
+                
+                <!-- Week 4-5 -->
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">25</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">26</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">27</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">28</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">29</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">30</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">31</div>
+                
+                <!-- June -->
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">1</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">2</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">3</div>
+                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">4</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="flex flex-col lg:flex-row gap-6">
+        <div class="flex-1 min-w-0 overflow-x-auto">
+          <h3 class="font-bold mb-2">NUMBER OF DAILY USERS</h3>
+          <div class="overflow-x-auto">
+            <canvas id="dailyUsersChart" class="min-w-[500px] w-full h-64 bg-white p-4 rounded-lg shadow mb-6"></canvas>
+          </div>
+          <h3 class="font-bold mb-2">AVERAGE OVERALL RATING</h3>
+          <div class="overflow-x-auto">
+            <canvas id="overallRatingChart" class="min-w-[500px] w-full h-64 bg-white p-4 rounded-lg shadow"></canvas>
+          </div>
+        </div>
+
+
+        <div class="w-full lg:w-[300px] bg-white p-4 rounded-lg shadow">
+          <div v-for="staff in staffList" class="flex items-center mb-4">
+            <img :src="staff.image" class="w-12 h-12 rounded-full mr-4">
+            <a :href="staff.link" class="text-black no-underline">
+              <strong>{{ staff.name }}</strong><br>
+              <i class="bi bi-star-fill text-yellow-400"></i>
+              <span class="text-yellow-500 font-bold">{{ staff.rating }}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    const { createApp } = Vue;
+
+
+    createApp({
+      data() {
+        return {
+          sidebarOpen: true,
+          staffList: [
+            { name: 'Porntip Panya', rating: 4.8, image: '"C:\\Senior\\All\\img\\P_Oi.png/60', link: 'Rating_Porntip.html' },
+            { name: 'Rattikarn Nanglae', rating: 4.7, image: 'https://via.placeholder.com/60', link: 'Rating_Rattikarn.html' },
+            { name: 'Sanyumporn Chaichormphu', rating: 4.2, image: 'https://via.placeholder.com/60', link: 'Rating_Sayumporn.html' },
+            { name: 'Tatchamay Whanchisri', rating: 3.9, image: 'https://via.placeholder.com/60', link: 'rating_tatchamay.html' },
+            { name: 'Pakpoom Lamprasert', rating: 4.8, image: 'https://via.placeholder.com/60', link: 'Rating_Pakpoom.html' },
+          ],
+        }
+      },
+      mounted() {
+        // Modified data structure to organize by weeks instead of years
+        const dailyUsersData = {
+          'Semester 1': {
+            'week1': { appointment: [8, 5, 6, 9, 7], document: [4, 3, 6, 5, 2] },
+            'week2': { appointment: [7, 4, 5, 6, 4], document: [2, 5, 4, 3, 6] },
+            'week3': { appointment: [6, 4, 7, 5, 6], document: [3, 2, 5, 4, 1] },
+            'week4': { appointment: [5, 3, 4, 6, 2], document: [2, 3, 4, 2, 5] },
+            'week5': { appointment: [10, 9, 8, 7, 6], document: [5, 4, 3, 2, 1] }
+          },
+          'Semester 2': {
+            'week1': { appointment: [7, 4, 5, 6, 4], document: [2, 5, 4, 3, 6] },
+            'week2': { appointment: [5, 3, 4, 6, 2], document: [2, 3, 4, 2, 5] },
+            'week3': { appointment: [9, 8, 7, 6, 5], document: [4, 3, 2, 1, 0] },
+            'week4': { appointment: [7, 4, 5, 6, 4], document: [2, 5, 4, 3, 6] },
+            'week5': { appointment: [9, 8, 7, 6, 5], document: [4, 3, 2, 1, 0] }
+          },
+          'Summer': {
+            'week1': { appointment: [3, 2, 4, 3, 1], document: [1, 0, 2, 1, 2] },
+            'week2': { appointment: [2, 1, 2, 2, 1], document: [0, 1, 1, 1, 0] },
+            'week3': { appointment: [4, 3, 2, 1, 0], document: [1, 1, 1, 1, 1] },
+            'week4': { appointment: [3, 2, 4, 3, 1], document: [1, 0, 2, 1, 2] },
+            'week5': { appointment: [4, 3, 2, 1, 0], document: [1, 1, 1, 1, 1] }
+          }
+        };
+
+
+        // Modified rating data to organize by weeks instead of years
+        const overallRatingAppointmentData = {
+          'Semester 1': {
+            'week1': [4.5, 4.3, 4.6],
+            'week2': [4.1, 3.9, 4.0],
+            'week3': [4.2, 4.0, 4.1],
+            'week4': [4.0, 3.8, 3.9],
+            'week5': [4.8, 4.7, 4.6]
+          },
+          'Semester 2': {
+            'week1': [4.1, 3.9, 4.0],
+            'week2': [4.0, 3.8, 3.9],
+            'week3': [4.6, 4.5, 4.4],
+            'week4': [4.1, 3.9, 4.0],
+            'week5': [4.6, 4.5, 4.4]
+          },
+          'Summer': {
+            'week1': [4.0, 4.1, 3.8],
+            'week2': [3.9, 4.0, 3.7],
+            'week3': [4.3, 4.2, 4.1],
+            'week4': [4.0, 4.1, 3.8],
+            'week5': [4.3, 4.2, 4.1]
+          }
+        };
+
+
+        const overallRatingDocumentData = {
+          'Semester 1': {
+            'week1': [4.2, 4.1, 4.3],
+            'week2': [3.8, 4.0, 3.9],
+            'week3': [4.1, 3.9, 4.0],
+            'week4': [3.9, 3.7, 3.8],
+            'week5': [4.7, 4.6, 4.5]
+          },
+          'Semester 2': {
+            'week1': [3.8, 4.0, 3.9],
+            'week2': [3.9, 3.7, 3.8],
+            'week3': [4.5, 4.4, 4.3],
+            'week4': [3.8, 4.0, 3.9],
+            'week5': [4.5, 4.4, 4.3]
+          },
+          'Summer': {
+            'week1': [3.7, 3.8, 3.6],
+            'week2': [3.6, 3.7, 3.5],
+            'week3': [4.2, 4.1, 4.0],
+            'week4': [3.7, 3.8, 3.6],
+            'week5': [4.2, 4.1, 4.0]
+          }
+        };
+
+
+        const semesterSelect = document.getElementById('semesterSelect');
+        const calendarToggle = document.getElementById('calendarToggle');
+        const calendarPopup = document.getElementById('calendarPopup');
+        const currentWeekDisplay = document.getElementById('currentWeekDisplay');
+        const weekButtons = document.querySelectorAll('.week-button');
+        
+        // Current selected week
+        let currentWeek = 'week1';
+
+
+        const ctx1 = document.getElementById('dailyUsersChart').getContext('2d');
+        const dailyChart = new Chart(ctx1, {
+          type: 'bar',
+          data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            datasets: [
+              { label: 'Appointment', backgroundColor: 'blue', data: dailyUsersData['Semester 1']['week1'].appointment },
+              { label: 'Document Tracking', backgroundColor: 'orange', data: dailyUsersData['Semester 1']['week1'].document }
+            ]
+          },
+          options: { responsive: true, scales: { y: { beginAtZero: true, max: 10 } } }
+        });
+
+
+        const ctx2 = document.getElementById('overallRatingChart').getContext('2d');
+        const ratingChart = new Chart(ctx2, {
+          type: 'bar',
+          data: {
+            labels: ['Fast Service', 'Helpful Staff', 'On Time'],
+            datasets: [
+              { label: 'Appointment', backgroundColor: 'blue', data: overallRatingAppointmentData['Semester 1']['week1'] },
+              { label: 'Document Tracking', backgroundColor: 'orange', data: overallRatingDocumentData['Semester 1']['week1'] }
+            ]
+          },
+          options: { responsive: true, scales: { y: { min: 0, max: 5 } } }
+        });
+
+
+        // Function to update charts based on selected week and semester
+        function updateCharts() {
+          const semester = semesterSelect.value;
+          
+          dailyChart.data.datasets[0].data = dailyUsersData[semester][currentWeek].appointment;
+          dailyChart.data.datasets[1].data = dailyUsersData[semester][currentWeek].document;
+          dailyChart.update();
+
+          ratingChart.data.datasets[0].data = overallRatingAppointmentData[semester][currentWeek];
+          ratingChart.data.datasets[1].data = overallRatingDocumentData[semester][currentWeek];
+          ratingChart.update();
+        }
+
+        // Function to update the display text for selected week
+        function updateWeekDisplay() {
+          const weekLabels = {
+            'week1': 'Week 1 (May 1-7)',
+            'week2': 'Week 2 (May 8-14)',
+            'week3': 'Week 3 (May 15-21)',
+            'week4': 'Week 4 (May 22-28)',
+            'week5': 'Week 5 (May 29-June 4)'
+          };
+          
+          currentWeekDisplay.textContent = weekLabels[currentWeek];
+        }
+        
+        // Function to update highlighted week in calendar
+        function updateHighlightedWeek() {
+          // Reset all days
+          document.querySelectorAll('[class*="-day"]').forEach(day => {
+            day.classList.remove('ring-2', 'ring-[#7e6ccf]');
+          });
+          
+          // Highlight the selected week's days
+          document.querySelectorAll(`.${currentWeek}-day`).forEach(day => {
+            day.classList.add('ring-2', 'ring-[#7e6ccf]');
+          });
+          
+          // Reset all week buttons
+          weekButtons.forEach(btn => {
+            btn.classList.remove('bg-[#7e6ccf]', 'text-white');
+          });
+          
+          // Highlight the selected week button
+          document.querySelector(`.week-button[data-week="${currentWeek}"]`).classList.add('bg-[#7e6ccf]', 'text-white');
+        }
+
+        // Toggle calendar popup visibility
+        calendarToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          calendarPopup.classList.toggle('hidden');
+        });
+
+        // Close calendar when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!calendarPopup.contains(e.target) && e.target !== calendarToggle && !calendarToggle.contains(e.target)) {
+            calendarPopup.classList.add('hidden');
+          }
+        });
+
+        // Add event listeners to week buttons
+        weekButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            currentWeek = this.getAttribute('data-week');
+            updateCharts();
+            updateWeekDisplay();
+            updateHighlightedWeek();
+            calendarPopup.classList.add('hidden');
+          });
+        });
+
+        // Initialize the calendar with pre-selected week
+        for (const weekNum of [1, 2, 3, 4, 5]) {
+          const weekDays = document.querySelectorAll(`.week${weekNum}-day`);
+          
+          weekDays.forEach(day => {
+            day.addEventListener('click', function() {
+              currentWeek = `week${weekNum}`;
+              updateCharts();
+              updateWeekDisplay();
+              updateHighlightedWeek();
+              calendarPopup.classList.add('hidden');
+            });
+          });
+        }
+
+        // Event listener for semester change
+        semesterSelect.addEventListener('change', updateCharts);
+        
+        // Initialize with highlighting the first week
+        updateHighlightedWeek();
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
