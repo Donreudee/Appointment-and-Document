@@ -11,13 +11,12 @@
 <body class="bg-white text-gray-800">
   <div id="app">
     <!-- ✅ Topbar -->
-    <div class="fixed top-0 left-0 w-full h-16 bg-[#a89ee0] text-white flex items-center justify-between px-6 z-50">
+    <div class="fixed top-0 left-0 w-full h-16 bg-[#003366] text-white flex items-center justify-between px-6 z-50">
       <div class="flex items-center">
         <button @click="sidebarOpen = !sidebarOpen" class="text-2xl mr-4 block">
           <i class="bi bi-list"></i>
         </button>
-        <img src="https://upload.wikimedia.org/wikipedia/en/7/7e/Logo_of_Mae_Fah_Luang_University.svg" class="h-10 mr-3">
-        <strong>REG.MFU</strong>
+        <img src="image/ADT.jpg" class="h-[60px] mr-3">
       </div>
       <div class="flex items-center gap-4">
         <div class="flex gap-1">
@@ -33,7 +32,7 @@
 
     <!-- ✅ Sidebar -->
     <div :class="[
-      'fixed top-16 left-0 h-[calc(100vh-4rem)] w-48 bg-[#7e6ccf] text-white flex flex-col transition-transform duration-300 z-40',
+      'fixed top-16 left-0 h-[calc(100vh-4rem)] w-48 bg-[#003366] text-white flex flex-col transition-transform duration-300 z-40',
       sidebarOpen ? 'translate-x-0' : '-translate-x-full'
     ]">
       <a href="dashboard.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5]">
@@ -54,30 +53,45 @@
         <button @click="showAdd = true" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add</button>
       </div>
 
-      <!-- Table Header -->
-      <div class="grid grid-cols-6 bg-gray-300 rounded-xl px-3 py-3 font-semibold text-sm mb-3">
-        <div>No.</div>
-        <div>Name</div>
-        <div>Email</div>
-        <div>Responsibilities</div>
-        <div>Status</div>
-        <div>Action</div>
-      </div>
+      <!-- ✅ Table Header -->
+<div class="grid grid-cols-[60px_1fr_2fr_2fr_100px_150px] bg-gray-300 rounded-xl px-3 py-3 font-semibold text-sm mb-3">
+  <div>No.</div>
+  <div>Name</div>
+  <div>Email</div>
+  <div>Responsibilities</div>
+  <div>Status</div>
+  <div>Action</div>
+</div>
 
-      <!-- Table Rows -->
-      <div v-for="(staff, index) in staffList" :key="index" class="grid grid-cols-6 items-center bg-gray-100 rounded-xl px-6 py-3 shadow mb-2">
-        <div>{{ index + 1 }}</div>
-        <div><strong>{{ staff.name }}</strong></div>
-        <div>{{ staff.email }}</div>
-        <div>{{ staff.role }}</div>
-        <div>{{ staff.disabled ? 'Disabled' : 'Active' }}</div>
-        <div class="flex gap-2 justify-center">
-          <button @click="toggleStatus(index)" :class="staff.disabled ? 'bg-gray-400' : 'bg-red-400 hover:bg-red-500'" class="text-white px-3 py-1 rounded text-sm">
-            {{ staff.disabled ? 'Enable' : 'Disable' }}
-          </button>
-          <button @click="editStaff(index)" class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500 text-sm">Edit</button>
-        </div>
-      </div>
+<!-- ✅ Table Row -->
+<div v-for="(staff, index) in staffList" :key="index" class="grid grid-cols-[60px_1fr_2fr_2fr_100px_150px] items-center bg-gray-100 rounded-xl px-3 py-3 shadow mb-2 text-sm">
+  <div>{{ index + 1 }}</div>
+  <div class="font-medium">{{ staff.name }}</div>
+  <div>{{ staff.email }}</div>
+  <div>{{ staff.role }}</div>
+  <div>
+    <span :class="staff.disabled ? 'text-red-500' : 'text-green-600'">
+      {{ staff.disabled ? 'Disabled' : 'Active' }}
+    </span>
+  </div>
+  <div class="flex justify-between gap-2 w-full">
+    <button
+      @click="toggleStatus(index)"
+      :class="staff.disabled ? 'bg-gray-400 hover:bg-gray-500' : 'bg-red-400 hover:bg-red-500'"
+      class="text-white px-3 py-1 rounded text-xs w-[90px]"
+    >
+      {{ staff.disabled ? 'Enable' : 'Disable' }}
+    </button>
+    <button
+      @click="editStaff(index)"
+      class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-xs w-[90px]"
+    >
+      Edit
+    </button>
+  </div>
+</div>
+
+
 
       <!-- Add Modal -->
       <div v-if="showAdd" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
@@ -127,11 +141,11 @@
         return {
           sidebarOpen: true,
           staffList: [
-            { name: 'Staff A', email: 'a@example.com', role: 'Course registration', disabled: false },
-            { name: 'Staff B', email: 'b@example.com', role: 'Tuition fee deferment', disabled: false },
-            { name: 'Staff C', email: 'c@example.com', role: 'University activity', disabled: false },
-            { name: 'Staff D', email: 'd@example.com', role: 'Student assistant', disabled: false },
-            { name: 'Staff E', email: 'e@example.com', role: 'Course registration', disabled: false }
+            { name: 'Staff A', email: 'a@lamduan.mfu.ac.th', role: 'Course registration', disabled: false },
+            { name: 'Staff B', email: 'b@lamduan.mfu.ac.th', role: 'Tuition fee deferment', disabled: false },
+            { name: 'Staff C', email: 'c@lamduan.mfu.ac.th', role: 'University activity', disabled: false },
+            { name: 'Staff D', email: 'd@lamduan.mfu.ac.th', role: 'Student assistant', disabled: false },
+            { name: 'Staff E', email: 'e@lamduan.mfu.ac.th', role: 'Course registration', disabled: false }
           ],
           newStaff: { name: '', email: '', role: '' },
           showAdd: false,

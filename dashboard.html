@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  
   <style>
     /* เพิ่ม CSS เพื่อรักษาการออกแบบเดิม */
     .bg-custom-purple {
@@ -23,16 +24,22 @@
       background-color: #6b5bb5;
     }
   </style>
+
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<!-- Vue Flatpickr Component -->
+<script src="https://cdn.jsdelivr.net/npm/vue-flatpickr-component"></script>
 </head>
 <body class="bg-[#f4f4f4] text-gray-800">
   <div id="app">
-    <div class="fixed top-0 left-0 w-full h-16 bg-[#a89ee0] text-white flex items-center justify-between px-6 z-50">
+    <div class="fixed top-0 left-0 w-full h-16 bg-[#003366] text-white flex items-center justify-between px-6 z-50">
       <div class="flex items-center">
         <button @click="sidebarOpen = !sidebarOpen" class="text-2xl mr-4 block">
           <i class="bi bi-list"></i>
         </button>
-        <img src="https://upload.wikimedia.org/wikipedia/en/7/7e/Logo_of_Mae_Fah_Luang_University.svg" class="h-10 mr-3">
-        <strong>REG.MFU</strong>
+        <img src="image/ADT.jpg" class="h-[60px] mr-3">
       </div>
       <div class="flex items-center gap-4">
         <div class="flex gap-1">
@@ -48,7 +55,7 @@
 
 
     <div :class="[
-      'fixed top-16 left-0 h-[calc(100vh-4rem)] w-48 bg-[#7e6ccf] text-white flex flex-col transition-transform duration-300 z-40',
+      'fixed top-16 left-0 h-[calc(100vh-4rem)] w-48 bg-[#003366] text-white flex flex-col transition-transform duration-300 z-40',
       sidebarOpen ? 'translate-x-0' : '-translate-x-full'
     ]">
       <a href="dashboard.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5] font-bold shadow-[inset_5px_0_0_white]">
@@ -80,6 +87,36 @@
           <!-- Calendar popup (initially hidden) -->
           <div id="calendarPopup" class="absolute right-0 top-full mt-1 bg-white shadow-lg rounded p-4 border z-50 hidden w-72">
             <h4 class="text-center mb-2 font-bold">Select Week</h4>
+
+            <!-- Year Picker -->
+            <div class="mb-3 text-center">
+              <label for="yearPicker" class="text-sm font-semibold mr-2">Year:</label>
+              <select id="yearPicker" class="border px-2 py-1 rounded text-gray-700">
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
+                <option value="2026">2026</option>
+              </select>
+            </div>
+
+            <div class="mb-3 text-center">
+              <label for="monthPicker" class="text-sm font-semibold mx-2">Month:</label>
+              <select id="monthPicker" class="border px-2 py-1 rounded text-gray-700">
+                <option value="0">January</option>
+                <option value="1">February</option>
+                <option value="2">March</option>
+                <option value="3">April</option>
+                <option value="4" selected>May</option>
+                <option value="5">June</option>
+                <option value="6">July</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
+              </select>
+            </div>
+
             <div class="mb-4">
               <!-- Week selection buttons -->
               <div class="grid grid-cols-1 gap-2">
@@ -112,56 +149,7 @@
                 <div class="text-xs font-bold">F</div>
                 <div class="text-xs font-bold">S</div>
                 
-                <!-- Week 1: April 27-May 3 -->
-                <div class="text-xs text-gray-400">27</div>
-                <div class="text-xs text-gray-400">28</div>
-                <div class="text-xs text-gray-400">29</div>
-                <div class="text-xs text-gray-400">30</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">1</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">2</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">3</div>
-                
-                <!-- Week 1-2 -->
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">4</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">5</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">6</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week1-day">7</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">8</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">9</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">10</div>
-                
-                <!-- Week 2-3 -->
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">11</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">12</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">13</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week2-day">14</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">15</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">16</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">17</div>
-                
-                <!-- Week 3-4 -->
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">18</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">19</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">20</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week3-day">21</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">22</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">23</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">24</div>
-                
-                <!-- Week 4-5 -->
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">25</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">26</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">27</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#f3f0fd] flex items-center justify-center week4-day">28</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">29</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">30</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">31</div>
-                
-                <!-- June -->
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">1</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">2</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">3</div>
-                <div class="w-6 h-6 text-xs rounded bg-[#e8e5f7] flex items-center justify-center week5-day">4</div>
+                <!-- Calendar grid will be dynamically generated -->
               </div>
             </div>
           </div>
@@ -200,17 +188,16 @@
   <script>
     const { createApp } = Vue;
 
-
     createApp({
       data() {
         return {
           sidebarOpen: true,
           staffList: [
-            { name: 'Porntip Panya', rating: 4.8, image: '"C:\\Senior\\All\\img\\P_Oi.png/60', link: 'Rating_Porntip.html' },
-            { name: 'Rattikarn Nanglae', rating: 4.7, image: 'https://via.placeholder.com/60', link: 'Rating_Rattikarn.html' },
-            { name: 'Sanyumporn Chaichormphu', rating: 4.2, image: 'https://via.placeholder.com/60', link: 'Rating_Sayumporn.html' },
-            { name: 'Tatchamay Whanchisri', rating: 3.9, image: 'https://via.placeholder.com/60', link: 'rating_tatchamay.html' },
-            { name: 'Pakpoom Lamprasert', rating: 4.8, image: 'https://via.placeholder.com/60', link: 'Rating_Pakpoom.html' },
+            { name: 'Porntip Panya', rating: 4.8, image: 'image/P_Oi.png', link: 'Rating_Porntip.html' },
+            { name: 'Rattikarn Nanglae', rating: 4.7, image: 'image/P_Lek.png', link: 'Rating_Rattikarn.html' },
+            { name: 'Sanyumporn Chaichormphu', rating: 4.2, image: 'image/P_Nim.png', link: 'Rating_Sayumporn.html' },
+            { name: 'Tatchamay Whanchisri', rating: 3.9, image: 'image/P_Angoon.png', link: 'rating_tatchamay.html' },
+            { name: 'Pakpoom Lamprasert', rating: 4.8, image: 'image/PP.png', link: 'Rating_Pakpoom.html' },
           ],
         }
       },
@@ -240,7 +227,6 @@
           }
         };
 
-
         // Modified rating data to organize by weeks instead of years
         const overallRatingAppointmentData = {
           'Semester 1': {
@@ -266,7 +252,6 @@
           }
         };
 
-
         const overallRatingDocumentData = {
           'Semester 1': {
             'week1': [4.2, 4.1, 4.3],
@@ -291,7 +276,6 @@
           }
         };
 
-
         const semesterSelect = document.getElementById('semesterSelect');
         const calendarToggle = document.getElementById('calendarToggle');
         const calendarPopup = document.getElementById('calendarPopup');
@@ -300,7 +284,6 @@
         
         // Current selected week
         let currentWeek = 'week1';
-
 
         const ctx1 = document.getElementById('dailyUsersChart').getContext('2d');
         const dailyChart = new Chart(ctx1, {
@@ -315,20 +298,19 @@
           options: { responsive: true, scales: { y: { beginAtZero: true, max: 10 } } }
         });
 
-
         const ctx2 = document.getElementById('overallRatingChart').getContext('2d');
         const ratingChart = new Chart(ctx2, {
           type: 'bar',
           data: {
-            labels: ['Fast Service', 'Helpful Staff', 'On Time'],
+            labels: ['Appointment', 'Document Tracking'],
             datasets: [
-              { label: 'Appointment', backgroundColor: 'blue', data: overallRatingAppointmentData['Semester 1']['week1'] },
-              { label: 'Document Tracking', backgroundColor: 'orange', data: overallRatingDocumentData['Semester 1']['week1'] }
+              { label: 'Fast Service', backgroundColor: '#9C27B0', data: [3, 5] },
+              { label: 'Helpful Staff', backgroundColor: '#4CAF50', data: [4, 3] },
+             {label: 'On Time', backgroundColor: '#EF4444', data: [2, 1]} 
             ]
           },
           options: { responsive: true, scales: { y: { min: 0, max: 5 } } }
         });
-
 
         // Function to update charts based on selected week and semester
         function updateCharts() {
@@ -344,16 +326,14 @@
         }
 
         // Function to update the display text for selected week
-        function updateWeekDisplay() {
-          const weekLabels = {
-            'week1': 'Week 1 (May 1-7)',
-            'week2': 'Week 2 (May 8-14)',
-            'week3': 'Week 3 (May 15-21)',
-            'week4': 'Week 4 (May 22-28)',
-            'week5': 'Week 5 (May 29-June 4)'
-          };
-          
-          currentWeekDisplay.textContent = weekLabels[currentWeek];
+        function updateWeekDisplay(year, month) {
+          // Find the selected week button
+          const selectedWeekButton = document.querySelector(`.week-button[data-week="${currentWeek}"]`);
+          if (selectedWeekButton) {
+            // Extract the week text without the "Week X: " prefix
+            const weekText = selectedWeekButton.textContent.replace(/Week \d+: /, '');
+            currentWeekDisplay.textContent = `Week ${currentWeek.replace('week', '')} (${weekText})`;
+          }
         }
         
         // Function to update highlighted week in calendar
@@ -418,6 +398,189 @@
 
         // Event listener for semester change
         semesterSelect.addEventListener('change', updateCharts);
+        
+        // ===== NEW CALENDAR FUNCTIONS =====
+        
+        // Get month and year pickers
+        const yearPicker = document.getElementById('yearPicker');
+        const monthPicker = document.getElementById('monthPicker');
+
+        // Function to generate calendar based on selected month and year
+        function generateCalendar(year, month) {
+          // Get the first day of the month
+          const firstDay = new Date(year, month, 1);
+          // Get the last day of the month
+          const lastDay = new Date(year, month + 1, 0);
+          
+          // Update month display title
+          const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+          ];
+          
+          document.querySelector('.border-t h5').textContent = `${monthNames[month]} ${year}`;
+          
+          // Clear existing calendar days
+          const calendarGrid = document.querySelector('.border-t .grid.grid-cols-7');
+          
+          // Save the day headers (S M T W T F S)
+          const dayHeaders = [];
+          const headers = calendarGrid.querySelectorAll('.text-xs.font-bold');
+          headers.forEach(header => {
+            dayHeaders.push(header.cloneNode(true));
+          });
+          
+          // Clear the grid
+          calendarGrid.innerHTML = '';
+          
+          // Re-add the day headers
+          dayHeaders.forEach(header => {
+            calendarGrid.appendChild(header);
+          });
+          
+          // Get the day of the week of the first day (0 = Sunday, 1 = Monday, etc.)
+          let startingDay = firstDay.getDay();
+          
+          // Add days from previous month
+          const prevMonth = new Date(year, month, 0);
+          const prevMonthLastDay = prevMonth.getDate();
+          
+          for (let i = 0; i < startingDay; i++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'text-xs text-gray-400';
+            dayElement.textContent = prevMonthLastDay - startingDay + i + 1;
+            calendarGrid.appendChild(dayElement);
+          }
+          
+          // Calculate week ranges for the month
+          const weekRanges = [];
+          let currentWeekNumber = 1;
+          let weekStart = 1;
+          
+          // Add current month days
+          for (let i = 1; i <= lastDay.getDate(); i++) {
+            const currentDate = new Date(year, month, i);
+            const dayOfWeek = currentDate.getDay();
+            
+            // Create day element
+            const dayElement = document.createElement('div');
+            dayElement.className = `w-6 h-6 text-xs rounded flex items-center justify-center`;
+            
+            // Determine which week this day belongs to
+            const dayWeekNumber = Math.ceil((i + startingDay) / 7);
+            
+            // Add week class
+            dayElement.classList.add(`${dayWeekNumber % 2 === 1 ? 'bg-[#e8e5f7]' : 'bg-[#f3f0fd]'}`);
+            dayElement.classList.add(`week${dayWeekNumber}-day`);
+            
+            // Set day number
+            dayElement.textContent = i;
+            
+            // Add click event
+            dayElement.addEventListener('click', function() {
+              currentWeek = `week${dayWeekNumber}`;
+              updateCharts();
+              updateWeekDisplay();
+              updateHighlightedWeek();
+              calendarPopup.classList.add('hidden');
+            });
+            
+            calendarGrid.appendChild(dayElement);
+            
+            // Track week ranges
+            if (dayOfWeek === 6 || i === lastDay.getDate()) { // Saturday or last day
+              const weekEnd = i;
+              // Format the date ranges
+              weekRanges.push({
+                week: `week${currentWeekNumber}`,
+                range: getDateRangeText(year, month, weekStart, weekEnd, currentWeekNumber)
+              });
+              
+              weekStart = i + 1;
+              currentWeekNumber++;
+            }
+          }
+          
+          // Add days from next month to fill the grid
+          const totalDaysAdded = startingDay + lastDay.getDate();
+          const remainingCells = 42 - totalDaysAdded; // 6 rows * 7 columns = 42 cells
+          
+          for (let i = 1; i <= remainingCells; i++) {
+            const dayElement = document.createElement('div');
+            dayElement.className = 'text-xs text-gray-400';
+            dayElement.textContent = i;
+            calendarGrid.appendChild(dayElement);
+          }
+          
+          // Update week buttons with new date ranges
+          updateWeekButtons(weekRanges);
+        }
+
+        // Function to get formatted date range text
+        function getDateRangeText(year, month, startDay, endDay, weekNum) {
+          const startDate = new Date(year, month, startDay);
+          let endDate = new Date(year, month, endDay);
+          
+          // If this is the last week and doesn't have 7 days, extend it to include days from next month
+          if (weekNum >= 4 && (endDay - startDay + 1) < 7) {
+            const daysToAdd = 7 - (endDay - startDay + 1);
+            endDate = new Date(year, month, endDay + daysToAdd);
+          }
+          
+          // Format the dates
+          const formatDate = (date) => {
+            const monthNames = [
+              "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ];
+            
+            return `${monthNames[date.getMonth()]} ${date.getDate()}`;
+          };
+          
+          return `${formatDate(startDate)}-${formatDate(endDate)}`;
+        }
+
+        // Function to update week buttons with new date ranges
+        function updateWeekButtons(weekRanges) {
+          const weekButtons = document.querySelectorAll('.week-button');
+          
+          // Reset all buttons to be visible
+          weekButtons.forEach(button => {
+            button.style.display = 'block';
+          });
+          
+          // Update buttons with the new date ranges
+          weekButtons.forEach((button, index) => {
+            if (index < weekRanges.length) {
+              const weekData = weekRanges[index];
+              button.setAttribute('data-week', weekData.week);
+              button.textContent = `Week ${index + 1}: ${weekData.range}`;
+            } else {
+              // Hide extra week buttons if there are fewer than 5 weeks
+              button.style.display = 'none';
+            }
+          });
+        }
+
+        // Add event listeners to month and year pickers
+        yearPicker.addEventListener('change', function() {
+          const selectedYear = parseInt(this.value);
+          const selectedMonth = parseInt(monthPicker.value);
+          generateCalendar(selectedYear, selectedMonth);
+          updateHighlightedWeek();
+        });
+
+        monthPicker.addEventListener('change', function() {
+          const selectedYear = parseInt(yearPicker.value);
+          const selectedMonth = parseInt(this.value);
+          generateCalendar(selectedYear, selectedMonth);
+          updateHighlightedWeek();
+        });
+
+        // Initialize the calendar with current selections
+        const initialYear = parseInt(yearPicker.value);
+        const initialMonth = parseInt(monthPicker.value);
+        generateCalendar(initialYear, initialMonth);
         
         // Initialize with highlighting the first week
         updateHighlightedWeek();
