@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-white text-gray-800">
+  <div id="app">
+    <!-- ✅ Topbar -->
+    <div class="fixed top-0 left-0 w-full h-16 bg-[#a89ee0] text-white flex items-center justify-between px-6 z-50">
+      <div class="flex items-center">
+        <button @click="sidebarOpen = !sidebarOpen" class="text-2xl mr-4 block">
+          <i class="bi bi-list"></i>
+        </button>
+        <img src="https://upload.wikimedia.org/wikipedia/en/7/7e/Logo_of_Mae_Fah_Luang_University.svg" class="h-10 mr-3">
+        <strong>REG.MFU</strong>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex gap-1">
+          <span class="bg-white text-[#7e6ccf] px-2 py-1 rounded font-bold">EN</span>
+          /
+          <span class="text-white px-2 py-1 rounded">TH</span>
+        </div>
+        <button class="border border-white px-3 py-1 rounded hover:bg-white hover:text-[#7e6ccf] flex items-center gap-2">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- ✅ Sidebar -->
+    <div :class="[
+      'fixed top-16 left-0 h-[calc(100vh-4rem)] w-48 bg-[#7e6ccf] text-white flex flex-col transition-transform duration-300 z-40',
+      sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+    ]">
+      <a href="dashboard.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5]">
+        <i class="bi bi-speedometer2 mr-3"></i> <span class="ml-1">Dashboard</span>
+      </a>
+      <a href="management.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5] font-bold shadow-[inset_5px_0_0_white]">
+        <i class="bi bi-people-fill mr-3"></i> <span class="ml-1">Management</span>
+      </a>
+      <a href="history.html" class="flex items-center px-5 py-3 hover:bg-[#6b5bb5]">
+        <i class="bi bi-clock-history mr-3"></i> <span class="ml-1">History</span>
+      </a>
+    </div>
+
+    <!-- ✅ Main Content -->
+    <div :class="[ 'transition-all duration-300 pt-20 px-4 sm:px-6', sidebarOpen ? 'ml-48' : 'ml-0' ]">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold">Management</h1>
+        <button @click="showAdd = true" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add</button>
+      </div>
+
+      <!-- Table Header -->
+      <div class="grid grid-cols-6 bg-gray-300 rounded-xl px-3 py-3 font-semibold text-sm mb-3">
+        <div>No.</div>
+        <div>Name</div>
+        <div>Email</div>
+        <div>Responsibilities</div>
+        <div>Status</div>
+        <div>Action</div>
+      </div>
+
+      <!-- Table Rows -->
+      <div v-for="(staff, index) in staffList" :key="index" class="grid grid-cols-6 items-center bg-gray-100 rounded-xl px-6 py-3 shadow mb-2">
+        <div>{{ index + 1 }}</div>
+        <div><strong>{{ staff.name }}</strong></div>
+        <div>{{ staff.email }}</div>
+        <div>{{ staff.role }}</div>
+        <div>{{ staff.disabled ? 'Disabled' : 'Active' }}</div>
+        <div class="flex gap-2 justify-center">
+          <button @click="toggleStatus(index)" :class="staff.disabled ? 'bg-gray-400' : 'bg-red-400 hover:bg-red-500'" class="text-white px-3 py-1 rounded text-sm">
+            {{ staff.disabled ? 'Enable' : 'Disable' }}
+          </button>
+          <button @click="editStaff(index)" class="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500 text-sm">Edit</button>
+        </div>
+      </div>
+
+      <!-- Add Modal -->
+      <div v-if="showAdd" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-xl w-80 shadow-lg">
+          <h2 class="text-xl font-bold mb-4">Add Staff</h2>
+          <input v-model="newStaff.name" type="text" placeholder="Name" class="w-full mb-3 p-2 border rounded" />
+          <input v-model="newStaff.email" type="email" placeholder="Email" class="w-full mb-3 p-2 border rounded" />
+          <select v-model="newStaff.role" class="w-full mb-3 p-2 border rounded">
+            <option disabled value="">Select Responsibility</option>
+            <option>Course registration</option>
+            <option>Tuition fee deferment</option>
+            <option>University activity</option>
+            <option>Student assistant</option>
+          </select>
+          <div class="flex justify-end gap-2">
+            <button @click="showAdd = false" class="px-4 py-1 rounded bg-gray-300 hover:bg-gray-400">Cancel</button>
+            <button @click="addStaff" class="px-4 py-1 rounded bg-green-500 text-white hover:bg-green-600">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Modal -->
+      <div v-if="showEdit" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-xl w-80 shadow-lg">
+          <h2 class="text-xl font-bold mb-4">Edit Staff</h2>
+          <input v-model="editData.name" type="text" class="w-full mb-3 p-2 border rounded" />
+          <input v-model="editData.email" type="email" class="w-full mb-3 p-2 border rounded" />
+          <select v-model="editData.role" class="w-full mb-3 p-2 border rounded">
+            <option>Course registration</option>
+            <option>Tuition fee deferment</option>
+            <option>University activity</option>
+            <option>Student assistant</option>
+          </select>
+          <div class="flex justify-end gap-2">
+            <button @click="showEdit = false" class="px-4 py-1 rounded bg-gray-300 hover:bg-gray-400">Cancel</button>
+            <button @click="saveEdit" class="px-4 py-1 rounded bg-yellow-500 text-white hover:bg-yellow-600">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+    createApp({
+      data() {
+        return {
+          sidebarOpen: true,
+          staffList: [
+            { name: 'Staff A', email: 'a@example.com', role: 'Course registration', disabled: false },
+            { name: 'Staff B', email: 'b@example.com', role: 'Tuition fee deferment', disabled: false },
+            { name: 'Staff C', email: 'c@example.com', role: 'University activity', disabled: false },
+            { name: 'Staff D', email: 'd@example.com', role: 'Student assistant', disabled: false },
+            { name: 'Staff E', email: 'e@example.com', role: 'Course registration', disabled: false }
+          ],
+          newStaff: { name: '', email: '', role: '' },
+          showAdd: false,
+          showEdit: false,
+          editIndex: null,
+          editData: { name: '', email: '', role: '' }
+        };
+      },
+      methods: {
+        addStaff() {
+          if (this.newStaff.name && this.newStaff.role && this.newStaff.email) {
+            this.staffList.push({ ...this.newStaff, disabled: false });
+            this.newStaff = { name: '', email: '', role: '' };
+            this.showAdd = false;
+          }
+        },
+        toggleStatus(index) {
+          this.staffList[index].disabled = !this.staffList[index].disabled;
+        },
+        editStaff(index) {
+          this.editIndex = index;
+          this.editData = { ...this.staffList[index] };
+          this.showEdit = true;
+        },
+        saveEdit() {
+          if (this.editData.name && this.editData.role && this.editData.email) {
+            this.staffList.splice(this.editIndex, 1, { ...this.editData });
+            this.showEdit = false;
+          }
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
